@@ -1,532 +1,123 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUXE DROPSHIP - Watches, Jewelry & Bags</title>
+    <meta name="description" content="Premium watches, jewelry and bags - LUXE DROPSHIP">
+    <title>LUXE DROPSHIP - Premium Watches, Jewelry & Bags</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #fff;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            overflow-x: hidden;
-        }
-
-        /* Full width for Google Sites embed */
-        html {
-            width: 100%;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Ensure full width container */
-        .wrapper {
-            width: 100%;
-            max-width: 100%;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Header */
-        .header {
-            background: #fff;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-        }
-
-        .header-container {
-            max-width: 100%;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            width: 100%;
-        }
-
-        .logo {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #000;
-            text-decoration: none;
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-
-        .nav-menu a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-menu a:hover {
-            color: #d4af37;
-        }
-
-        .header-icons {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .header-icons i {
-            font-size: 1.2rem;
-            color: #333;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .header-icons i:hover {
-            color: #d4af37;
-        }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
-            background-size: cover;
-            background-position: center;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: white;
-            margin-top: 80px;
-        }
-
-        .hero-content h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .hero-content p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-
-        .cta-button {
-            background: transparent;
-            border: 2px solid white;
-            color: white;
-            padding: 1rem 2rem;
-            font-size: 1rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .cta-button:hover {
-            background: white;
-            color: #000;
-        }
-
-        /* Categories Section */
-        .categories {
-            padding: 5rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 3rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .categories-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        .category-card {
-            position: relative;
-            overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-
-        .category-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .category-image {
-            width: 100%;
-            height: 300px;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .category-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
-            color: white;
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .category-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .category-button {
-            background: #d4af37;
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .category-button:hover {
-            background: #b8941f;
-        }
-
-        /* Products Section */
-        .products {
-            padding: 5rem 2rem;
-            background: #f8f9fa;
-        }
-
-        .products-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-
-        .product-card {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .product-image {
-            width: 100%;
-            height: 250px;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .product-info {
-            padding: 1.5rem;
-        }
-
-        .product-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .product-price {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #d4af37;
-            margin-bottom: 1rem;
-        }
-
-        .product-button {
-            background: #000;
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            width: 100%;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .product-button:hover {
-            background: #333;
-        }
-
-        .new-badge {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: #d4af37;
-            color: white;
-            padding: 0.3rem 0.8rem;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        /* Footer */
-        .footer {
-            background: #000;
-            color: white;
-            padding: 3rem 2rem 1rem;
-        }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-
-        .footer-section h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section ul li {
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-section ul li a {
-            color: #ccc;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .footer-section ul li a:hover {
-            color: #d4af37;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .social-links i {
-            font-size: 1.5rem;
-            color: #ccc;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .social-links i:hover {
-            color: #d4af37;
-        }
-
-        .footer-bottom {
-            text-align: center;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid #333;
-            color: #ccc;
-        }
-
-        /* Payment Integration */
-        .payment-methods {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin: 2rem 0;
-            flex-wrap: wrap;
-        }
-
-        .payment-method {
-            background: #f8f9fa;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
-            }
-
-            .hero-content h1 {
-                font-size: 2.5rem;
-            }
-
-            .categories-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .products-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <div class="header-container">
-            <a href="#" class="logo">LUXE DROPSHIP</a>
+            <a href="index.html" class="logo">LUXE DROPSHIP</a>
             <nav>
                 <ul class="nav-menu">
-                    <li><a href="#home">Trang chủ</a></li>
-                    <li><a href="#watches">Đồng hồ</a></li>
-                    <li><a href="#jewelry">Trang sức</a></li>
-                    <li><a href="#bags">Túi xách</a></li>
-                    <li><a href="#about">Giới thiệu</a></li>
+                    <li><a href="#home" data-i18n="home">Home</a></li>
+                    <li><a href="#watches" data-i18n="watches">Watches</a></li>
+                    <li><a href="#jewelry" data-i18n="jewelry">Jewelry</a></li>
+                    <li><a href="#bags" data-i18n="bags">Bags</a></li>
+                    <li><a href="#about" data-i18n="about">About</a></li>
                 </ul>
             </nav>
-            <div class="header-icons">
-                <i class="fas fa-search"></i>
-                <i class="fas fa-user"></i>
-                <i class="fas fa-shopping-bag"></i>
+            <div class="header-right">
+                <div id="languageSwitcher" class="language-switcher"></div>
+                <div class="header-icons">
+                    <i class="fas fa-search" id="searchIcon"></i>
+                    <i class="fas fa-user" id="userIcon"></i>
+                    <i class="fas fa-shopping-bag" id="cartIcon"></i>
+                </div>
             </div>
         </div>
     </header>
 
+    <!-- User Dropdown -->
+    <div id="userDropdown" class="user-dropdown hidden">
+        <div id="userMenu">
+            <a href="auth.html" data-i18n="login">Login</a>
+            <a href="auth.html?register=1" data-i18n="register">Register</a>
+        </div>
+        <div id="loggedInMenu" class="hidden">
+            <span id="userName"></span>
+            <a href="payout.html" data-i18n="cart">Cart</a>
+            <a href="#" id="logoutBtn" data-i18n="logout">Logout</a>
+            <a href="admin.html" id="adminLink" class="hidden" data-i18n="admin">Admin</a>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div id="cartSidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h3 data-i18n="cart">Cart</h3>
+            <button class="cart-close" onclick="closeCart()"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="cartContent" class="cart-content">
+            <div class="cart-empty">
+                <i class="fas fa-shopping-cart"></i>
+                <p data-i18n="cartEmpty">Your cart is empty</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span data-i18n="total">Total:</span>
+                <span id="cartTotal">$0.00</span>
+            </div>
+            <button class="checkout-btn" onclick="goToCheckout()" data-i18n="checkout">Checkout</button>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div id="searchModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSearch()">&times;</span>
+            <h2>Search Products</h2>
+            <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchProducts(event)">
+            <div id="searchResults"></div>
+        </div>
+    </div>
+
     <!-- Hero Section -->
     <section class="hero" id="home">
         <div class="hero-content">
-            <h1>Khám phá bộ sưu tập mới</h1>
-            <p>Đồng hồ, trang sức và túi xách cao cấp từ các thương hiệu uy tín</p>
-            <a href="#products" class="cta-button">Mua ngay</a>
+            <h1 data-i18n="heroTitle">Discover the New Collection</h1>
+            <p data-i18n="heroSubtitle">Premium watches, jewelry and bags from trusted brands</p>
+            <a href="#products" class="cta-button" data-i18n="shopNow">Shop Now</a>
         </div>
     </section>
 
     <!-- Categories Section -->
-    <section class="categories">
-        <h2 class="section-title">Mua sắm theo danh mục</h2>
-        <div class="categories-grid">
-            <div class="category-card">
-                <div class="category-image" style="background-image: url('https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80')"></div>
-                <div class="category-overlay">
-                    <h3 class="category-title">Đồng hồ nữ</h3>
-                    <button class="category-button" onclick="initiatePayment('women-watches', 89.95)">Mua ngay</button>
-                </div>
-            </div>
-            <div class="category-card">
-                <div class="category-image" style="background-image: url('https://images.unsplash.com/photo-1523170335258-f5b6c6a4450b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80')"></div>
-                <div class="category-overlay">
-                    <h3 class="category-title">Đồng hồ nam</h3>
-                    <button class="category-button" onclick="initiatePayment('men-watches', 109.95)">Mua ngay</button>
-                </div>
-            </div>
-            <div class="category-card">
-                <div class="category-image" style="background-image: url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80')"></div>
-                <div class="category-overlay">
-                    <h3 class="category-title">Trang sức</h3>
-                    <button class="category-button" onclick="initiatePayment('jewelry', 39.95)">Mua ngay</button>
-                </div>
-            </div>
-            <div class="category-card">
-                <div class="category-image" style="background-image: url('https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80')"></div>
-                <div class="category-overlay">
-                    <h3 class="category-title">Túi xách</h3>
-                    <button class="category-button" onclick="initiatePayment('bags', 99.95)">Mua ngay</button>
-                </div>
-            </div>
+    <section class="categories" id="categories">
+        <h2 class="section-title" data-i18n="shopByCategory">Shop by Category</h2>
+        <div class="categories-grid" id="categoriesGrid">
+            <!-- Categories loaded dynamically -->
         </div>
     </section>
 
     <!-- Products Section -->
     <section class="products" id="products">
         <div class="products-container">
-            <h2 class="section-title">Sản phẩm bán chạy</h2>
-            <div class="products-grid">
-                <div class="product-card">
-                    <div class="new-badge">Mới</div>
-                    <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')"></div>
-                    <div class="product-info">
-                        <h3 class="product-title">Đồng hồ nữ cao cấp</h3>
-                        <p class="product-price">$89.95</p>
-                        <button class="product-button" onclick="initiatePayment('watch1', 89.95)">Mua ngay với BitPay</button>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')"></div>
-                    <div class="product-info">
-                        <h3 class="product-title">Vòng tay vàng</h3>
-                        <p class="product-price">$39.95</p>
-                        <button class="product-button" onclick="initiatePayment('bracelet1', 39.95)">Mua ngay với BitPay</button>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="new-badge">Mới</div>
-                    <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')"></div>
-                    <div class="product-info">
-                        <h3 class="product-title">Túi xách da cao cấp</h3>
-                        <p class="product-price">$99.95</p>
-                        <button class="product-button" onclick="initiatePayment('bag1', 99.95)">Mua ngay với BitPay</button>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1523170335258-f5b6c6a4450b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')"></div>
-                    <div class="product-info">
-                        <h3 class="product-title">Đồng hồ nam thể thao</h3>
-                        <p class="product-price">$109.95</p>
-                        <button class="product-button" onclick="initiatePayment('watch2', 109.95)">Mua ngay với BitPay</button>
-                    </div>
-                </div>
+            <h2 class="section-title" data-i18n="bestselling">Bestsellers</h2>
+            <div class="products-grid" id="productsGrid">
+                <!-- Products loaded dynamically -->
             </div>
         </div>
     </section>
 
     <!-- Payment Methods -->
-    <section style="padding: 2rem; background: #f8f9fa; text-align: center;">
-        <h3 style="margin-bottom: 1rem;">Chấp nhận thanh toán</h3>
+    <section class="payment-section">
+        <h3 data-i18n="paymentMethods">Payment Methods Accepted</h3>
         <div class="payment-methods">
             <div class="payment-method">
-                <i class="fab fa-bitcoin"></i> Bitcoin (BitPay)
+                <i class="fab fa-bitcoin"></i> Bitcoin
             </div>
             <div class="payment-method">
                 <i class="fas fa-credit-card"></i> Visa/Mastercard
             </div>
             <div class="payment-method">
                 <i class="fab fa-paypal"></i> PayPal
-            </div>
-            <div class="payment-method">
-                <i class="fas fa-mobile-alt"></i> BitPay Card
             </div>
         </div>
     </section>
@@ -535,183 +126,51 @@
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-section">
-                <h3>Sản phẩm</h3>
+                <h3 data-i18n="products">Products</h3>
                 <ul>
-                    <li><a href="#">Đồng hồ nữ</a></li>
-                    <li><a href="#">Đồng hồ nam</a></li>
-                    <li><a href="#">Trang sức</a></li>
-                    <li><a href="#">Túi xách</a></li>
+                    <li><a href="#watches" data-i18n="womensWatches">Women's Watches</a></li>
+                    <li><a href="#watches" data-i18n="mensWatches">Men's Watches</a></li>
+                    <li><a href="#jewelry" data-i18n="jewelry">Jewelry</a></li>
+                    <li><a href="#bags" data-i18n="bags">Bags</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h3>Hướng dẫn</h3>
+                <h3 data-i18n="guides">Guides</h3>
                 <ul>
-                    <li><a href="#">Hướng dẫn mua hàng</a></li>
-                    <li><a href="#">Chính sách đổi trả</a></li>
-                    <li><a href="#">Vận chuyển</a></li>
-                    <li><a href="#">Bảo hành</a></li>
+                    <li><a href="#">Shopping Guide</a></li>
+                    <li><a href="#">Return Policy</a></li>
+                    <li><a href="#">Shipping</a></li>
+                    <li><a href="#">Warranty</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h3>Về chúng tôi</h3>
+                <h3 data-i18n="aboutUs">About Us</h3>
                 <ul>
-                    <li><a href="#">Câu chuyện thương hiệu</a></li>
-                    <li><a href="#">Liên hệ</a></li>
-                    <li><a href="#">Tuyển dụng</a></li>
-                    <li><a href="#">Bền vững</a></li>
+                    <li><a href="#">Our Story</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Sustainability</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h3>Hỗ trợ</h3>
+                <h3 data-i18n="support">Support</h3>
                 <ul>
-                    <li><a href="#">Chính sách trả hàng</a></li>
-                    <li><a href="#">Chính sách vận chuyển</a></li>
+                    <li><a href="#">Return Policy</a></li>
+                    <li><a href="#">Shipping Policy</a></li>
                     <li><a href="#">FAQ</a></li>
-                    <li><a href="#">Điều khoản sử dụng</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
                 </ul>
-                <div class="social-links">
-                    <i class="fab fa-instagram"></i>
-                    <i class="fab fa-facebook"></i>
-                    <i class="fab fa-youtube"></i>
-                    <i class="fab fa-pinterest"></i>
-                </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 LUXE DROPSHIP. Tất cả quyền được bảo lưu.</p>
+            <p>&copy; 2024 LUXE DROPSHIP. All rights reserved.</p>
         </div>
     </footer>
 
-    <script>
-        // Cart functionality
-        let cart = [];
-        
-        function addToCart(productId) {
-            cart.push(productId);
-            updateCartCount();
-            alert('Đã thêm sản phẩm vào giỏ hàng!');
-        }
-        
-        function updateCartCount() {
-            const cartIcon = document.querySelector('.fa-shopping-bag');
-            if (cart.length > 0) {
-                cartIcon.style.position = 'relative';
-                cartIcon.innerHTML = `<i class="fas fa-shopping-bag"></i><span style="position: absolute; top: -8px; right: -8px; background: #d4af37; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: flex; align-items: center; justify-content: center;">${cart.length}</span>`;
-            }
-        }
-
-        // Smooth scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // BitPay Integration
-        class BitPayIntegration {
-            constructor() {
-                this.apiUrl = 'https://bitpay.com/api/v2';
-                this.invoiceUrl = 'https://bitpay.com/invoice';
-                this.apiKey = 'your-bitpay-api-key'; // Thay thế bằng API key thực tế
-            }
-
-            async createInvoice(orderData) {
-                try {
-                    const invoiceData = {
-                        price: orderData.amount,
-                        currency: orderData.currency || 'USD',
-                        orderId: orderData.orderId,
-                        itemDesc: orderData.description,
-                        notificationURL: window.location.origin + '/bitpay-webhook',
-                        redirectURL: window.location.origin + '/payment-success',
-                        buyer: {
-                            email: orderData.email,
-                            name: orderData.customerName
-                        }
-                    };
-
-                    const response = await fetch(this.apiUrl + '/invoices', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + this.apiKey,
-                            'X-Accept-Version': '2.0.0'
-                        },
-                        body: JSON.stringify(invoiceData)
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Failed to create invoice');
-                    }
-
-                    return await response.json();
-                } catch (error) {
-                    console.error('BitPay Error:', error);
-                    throw error;
-                }
-            }
-
-            async processPayment(orderData) {
-                try {
-                    const invoice = await this.createInvoice(orderData);
-                    
-                    // Redirect to BitPay payment page
-                    window.location.href = invoice.url;
-                    
-                } catch (error) {
-                    alert('Có lỗi xảy ra khi tạo hóa đơn thanh toán. Vui lòng thử lại.');
-                    console.error('Payment Error:', error);
-                }
-            }
-        }
-
-        // Initialize BitPay
-        const bitpay = new BitPayIntegration();
-
-        // Payment integration
-        function initiatePayment(productId, amount) {
-            const productData = getProductData(productId);
-            const orderData = {
-                orderId: generateOrderId(),
-                amount: amount,
-                currency: 'USD',
-                description: productData.name,
-                email: prompt('Vui lòng nhập email của bạn:'),
-                customerName: prompt('Vui lòng nhập tên của bạn:')
-            };
-
-            if (!orderData.email || !orderData.customerName) {
-                alert('Vui lòng điền đầy đủ thông tin để tiếp tục thanh toán.');
-                return;
-            }
-
-            bitpay.processPayment(orderData);
-        }
-
-        function getProductData(productId) {
-            const products = {
-                'watch1': { name: 'Đồng hồ nữ cao cấp', price: 89.95 },
-                'bracelet1': { name: 'Vòng tay vàng', price: 39.95 },
-                'bag1': { name: 'Túi xách da cao cấp', price: 99.95 },
-                'watch2': { name: 'Đồng hồ nam thể thao', price: 109.95 },
-                'women-watches': { name: 'Bộ sưu tập đồng hồ nữ', price: 89.95 },
-                'men-watches': { name: 'Bộ sưu tập đồng hồ nam', price: 109.95 },
-                'jewelry': { name: 'Bộ sưu tập trang sức', price: 39.95 },
-                'bags': { name: 'Bộ sưu tập túi xách', price: 99.95 }
-            };
-            return products[productId] || { name: 'Sản phẩm', price: 0 };
-        }
-
-        function generateOrderId() {
-            return 'ORDER_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        }
-    </script>
+    <!-- Scripts -->
+    <script src="js/database.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
