@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán - LUXE DROPSHIP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .checkout-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            padding: 0 1rem;
+        }
+
+        .checkout-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .order-summary {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .payment-methods {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .payment-method {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover {
+            border-color: #d4af37;
+        }
+
+        .payment-method.selected {
+            border-color: #d4af37;
+            background: #fef9e7;
+        }
+
+        .payment-method input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+
+        .crypto-payment {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none !important;
+        }
+
+        .crypto-payment:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+
+        .crypto-payment.selected {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+
+        .crypto-icons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .crypto-icon {
+            width: 30px;
+            height: 30px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .order-item-info {
+            flex: 1;
+        }
+
+        .order-item-title {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .order-item-price {
+            color: #d4af37;
+            font-weight: 600;
+        }
+
+        .price-breakdown {
+            margin-top: 1rem;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .total-row {
+            font-weight: 700;
+            font-size: 1.2rem;
+            padding-top: 1rem;
+            border-top: 2px solid #d4af37;
+        }
+
+        .pay-button {
+            width: 100%;
+            background: #000;
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 1rem;
+        }
+
+        .pay-button:hover {
+            background: #333;
+        }
+
+        .pay-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .express-checkout {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .express-btn {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .express-btn:hover {
+            border-color: #d4af37;
+        }
+
+        .express-btn.paypal {
+            background: #0070ba;
+            color: white;
+            border-color: #0070ba;
+        }
+
+        .express-btn.shop-pay {
+            background: #5a31f4;
+            color: white;
+            border-color: #5a31f4;
+        }
+
+        .express-btn.google-pay {
+            background: #000;
+            color: white;
+            border-color: #000;
+        }
+
+        .or-divider {
+            text-align: center;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .or-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #ddd;
+        }
+
+        .or-divider span {
+            background: white;
+            padding: 0 1rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .express-checkout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <!-- Checkout Form -->
+        <div class="checkout-form">
+            <h2 style="margin-bottom: 2rem; text-align: center;">Thanh toán</h2>
+            
+            <!-- Express Checkout -->
+            <div class="express-checkout">
+                <button class="express-btn shop-pay" onclick="expressCheckout('shop-pay')">
+                    <i class="fas fa-shopping-cart"></i><br>
+                    Shop Pay
+                </button>
+                <button class="express-btn paypal" onclick="expressCheckout('paypal')">
+                    <i class="fab fa-paypal"></i><br>
+                    PayPal
+                </button>
+                <button class="express-btn google-pay" onclick="expressCheckout('google-pay')">
+                    <i class="fab fa-google-pay"></i><br>
+                    Google Pay
+                </button>
+            </div>
+
+            <div class="or-divider">
+                <span>HOẶC</span>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="form-section">
+                <h3>Thông tin liên hệ</h3>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+            </div>
+
+            <!-- Delivery Information -->
+            <div class="form-section">
+                <h3>Thông tin giao hàng</h3>
+                <div class="form-group">
+                    <label for="country">Quốc gia/Vùng</label>
+                    <select id="country" name="country" required>
+                        <option value="VN">Việt Nam</option>
+                        <option value="US">Hoa Kỳ</option>
+                        <option value="UK">Vương quốc Anh</option>
+                        <option value="DE">Đức</option>
+                        <option value="FR">Pháp</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">Tên</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Họ</label>
+                        <input type="text" id="lastName" name="lastName" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="address">Địa chỉ</label>
+                    <input type="text" id="address" name="address" required>
+                </div>
+                <div class="form-group">
+                    <label for="apartment">Căn hộ, suite, etc. (tùy chọn)</label>
+                    <input type="text" id="apartment" name="apartment">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="city">Thành phố</label>
+                        <input type="text" id="city" name="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postalCode">Mã bưu điện (tùy chọn)</label>
+                        <input type="text" id="postalCode" name="postalCode">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Số điện thoại</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="form-section">
+                <h3>Phương thức thanh toán</h3>
+                <div class="payment-methods">
+                    <!-- Crypto Payment -->
+                    <div class="payment-method crypto-payment" onclick="selectPaymentMethod('crypto')">
+                        <input type="radio" name="payment" value="crypto" id="crypto">
+                        <label for="crypto">
+                            <strong>Thanh toán Crypto</strong><br>
+                            <small>Bitcoin, Ethereum, USDT và nhiều loại khác</small>
+                            <div class="crypto-icons">
+                                <div class="crypto-icon">₿</div>
+                                <div class="crypto-icon">Ξ</div>
+                                <div class="crypto-icon">₮</div>
+                                <div class="crypto-icon">₳</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Credit Card -->
+                    <div class="payment-method" onclick="selectPaymentMethod('card')">
+                        <input type="radio" name="payment" value="card" id="card">
+                        <label for="card">
+                            <strong>Thẻ tín dụng</strong><br>
+                            <small>Tất cả giao dịch được bảo mật và mã hóa</small>
+                            <div style="margin-top: 0.5rem;">
+                                <i class="fab fa-cc-visa" style="font-size: 1.5rem; margin-right: 0.5rem;"></i>
+                                <i class="fab fa-cc-mastercard" style="font-size: 1.5rem; margin-right: 0.5rem;"></i>
+                                <i class="fab fa-cc-amex" style="font-size: 1.5rem;"></i>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- PayPal -->
+                    <div class="payment-method" onclick="selectPaymentMethod('paypal')">
+                        <input type="radio" name="payment" value="paypal" id="paypal">
+                        <label for="paypal">
+                            <strong>PayPal</strong><br>
+                            <small>Thanh toán nhanh và an toàn</small>
+                        </label>
+                    </div>
+
+                    <!-- Klarna -->
+                    <div class="payment-method" onclick="selectPaymentMethod('klarna')">
+                        <input type="radio" name="payment" value="klarna" id="klarna">
+                        <label for="klarna">
+                            <strong>Klarna - Thanh toán linh hoạt</strong><br>
+                            <small>Trả góp không lãi suất</small>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Remember Me -->
+            <div class="form-section">
+                <h3>Ghi nhớ thông tin</h3>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="remember">
+                        Lưu thông tin của tôi để thanh toán nhanh hơn với tài khoản Shop
+                    </label>
+                </div>
+            </div>
+
+            <button class="pay-button" onclick="processPayment()">
+                Thanh toán ngay
+            </button>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <h3 style="margin-bottom: 1rem;">Tóm tắt đơn hàng</h3>
+            
+            <div class="order-item">
+                <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Đồng hồ">
+                <div class="order-item-info">
+                    <div class="order-item-title">Đồng hồ nữ cao cấp</div>
+                    <div class="order-item-price">$89.95</div>
+                </div>
+            </div>
+
+            <div class="order-item">
+                <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Vòng tay">
+                <div class="order-item-info">
+                    <div class="order-item-title">Vòng tay vàng</div>
+                    <div class="order-item-price">$39.95</div>
+                </div>
+            </div>
+
+            <div class="price-breakdown">
+                <div class="price-row">
+                    <span>Tạm tính - 2 sản phẩm</span>
+                    <span>$129.90</span>
+                </div>
+                <div class="price-row">
+                    <span>Vận chuyển</span>
+                    <span>$10.00</span>
+                </div>
+                <div class="total-row">
+                    <span>Tổng cộng</span>
+                    <span>$139.90</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPaymentMethod = null;
+
+        function selectPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            
+            // Remove selected class from all methods
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked method
+            event.currentTarget.classList.add('selected');
+        }
+
+        function expressCheckout(method) {
+            alert(`Chuyển hướng đến ${method} để thanh toán...`);
+            // Here you would integrate with actual payment providers
+        }
+
+        function processPayment() {
+            if (!selectedPaymentMethod) {
+                alert('Vui lòng chọn phương thức thanh toán');
+                return;
+            }
+
+            const email = document.getElementById('email').value;
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+
+            if (!email || !firstName || !lastName) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc');
+                return;
+            }
+
+            switch(selectedPaymentMethod) {
+                case 'crypto':
+                    initiateCryptoPayment();
+                    break;
+                case 'card':
+                    initiateCardPayment();
+                    break;
+                case 'paypal':
+                    initiatePayPalPayment();
+                    break;
+                case 'klarna':
+                    initiateKlarnaPayment();
+                    break;
+                default:
+                    alert('Phương thức thanh toán không hợp lệ');
+            }
+        }
+
+        function initiateCryptoPayment() {
+            // Coinbase Commerce integration
+            const amount = 139.90;
+            const currency = 'USD';
+            
+            // This would be replaced with actual Coinbase Commerce API
+            alert(`Khởi tạo thanh toán crypto: ${amount} ${currency}\n\nTích hợp với Coinbase Commerce API sẽ được thực hiện ở đây.`);
+            
+            // Example Coinbase Commerce integration:
+            /*
+            const coinbaseCommerce = new CoinbaseCommerce({
+                apiKey: 'your-api-key',
+                environment: 'sandbox' // or 'production'
+            });
+            
+            coinbaseCommerce.createCharge({
+                name: 'LUXE DROPSHIP Order',
+                description: 'Đồng hồ và trang sức cao cấp',
+                local_price: {
+                    amount: amount.toString(),
+                    currency: currency
+                },
+                pricing_type: 'fixed_price',
+                metadata: {
+                    order_id: generateOrderId(),
+                    customer_email: document.getElementById('email').value
+                }
+            }).then(charge => {
+                window.location.href = charge.hosted_url;
+            });
+            */
+        }
+
+        function initiateCardPayment() {
+            // Stripe or other card processor integration
+            alert('Khởi tạo thanh toán thẻ tín dụng...\n\nTích hợp với Stripe API sẽ được thực hiện ở đây.');
+        }
+
+        function initiatePayPalPayment() {
+            // PayPal integration
+            alert('Chuyển hướng đến PayPal...\n\nTích hợp với PayPal API sẽ được thực hiện ở đây.');
+        }
+
+        function initiateKlarnaPayment() {
+            // Klarna integration
+            alert('Chuyển hướng đến Klarna...\n\nTích hợp với Klarna API sẽ được thực hiện ở đây.');
+        }
+
+        function generateOrderId() {
+            return 'ORDER_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Form validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('.checkout-form');
+            const inputs = form.querySelectorAll('input[required], select[required]');
+            
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    if (!this.value.trim()) {
+                        this.style.borderColor = '#e74c3c';
+                    } else {
+                        this.style.borderColor = '#ddd';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
