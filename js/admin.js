@@ -1,24 +1,54 @@
 // Admin Panel Logic
-document.addEventListener('DOMContentLoaded', function() {
+// Security check function
+function checkAdminAccess() {
+    // Check if database is initialized
+    if (!db || typeof db === 'undefined') {
+        console.error('Database not initialized');
+        return false;
+    }
+
+    // Check if auth is initialized
+    if (!auth || typeof auth === 'undefined') {
+        console.error('Auth not initialized');
+        return false;
+    }
+
     // Check if user is logged in
-    if (!auth.isLoggedIn()) {
-        alert('Please login first to access Admin Panel.');
-        window.location.href = 'index.html';
-        return;
+    const userId = localStorage.getItem('currentUserId');
+    if (!userId) {
+        return false;
+    }
+
+    // Get user from database
+    const user = db.getUserById(userId);
+    if (!user) {
+        return false;
     }
 
     // Check if user is admin
-    if (!auth.isAdmin()) {
-        alert('Access denied. Admin privileges required.');
-        window.location.href = 'index.html';
-        return;
+    if (user.role !== 'admin') {
+        return false;
     }
 
-    // Load dashboard
-    loadDashboard();
-    loadUsers();
-    loadProducts();
-    loadOrders();
+    return true;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait for auth to initialize
+    setTimeout(function() {
+        // Strict security check
+        if (!checkAdminAccess()) {
+            alert('Access denied. Admin login required.');
+            window.location.href = 'index.html';
+            return;
+        }
+
+        // Load dashboard
+        loadDashboard();
+        loadUsers();
+        loadProducts();
+        loadOrders();
+    }, 100);
 });
 
 function showTab(tabName) {
@@ -252,33 +282,71 @@ function deleteProduct(productId) {
 
 // Orders Management
 function loadOrders() {
-    const orders = db.getOrders();
+    // Get orders from both database and localStorage
+    const dbOrders = db.getOrders();
+    const localStorageOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+    
+    // Combine and sort orders
+    const allOrders = [...dbOrders, ...localStorageOrders].sort((a, b) => 
+        new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date)
+    );
+    
     const tbody = document.getElementById('ordersTableBody');
 
-    if (orders.length === 0) {
+    if (allOrders.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">No orders yet</td></tr>';
         return;
     }
 
-    tbody.innerHTML = orders.map(order => {
+    tbody.innerHTML = allOrders.map(order => {
         const user = order.userId ? db.getUserById(order.userId) : null;
+        const customer = order.customer;
         const items = order.items || [{ name: order.productName || 'N/A', price: order.amount || 0 }];
+        
+        // Customer info
+        let customerInfo = 'Guest';
+        if (customer) {
+            customerInfo = `${customer.name} | ${customer.phone}`;
+        } else if (user) {
+            customerInfo = user.name || user.email;
+        }
+        
+        // Items text
+        const itemsText = items.map(item => `${item.name} (x${item.quantity || 1})`).join(', ');
         
         return `
             <tr>
                 <td>${order.id}</td>
-                <td>${user ? (user.name || user.email) : 'Guest'}</td>
-                <td>${items.length} item(s)</td>
+                <td>
+                    <div>
+                        <strong>${customerInfo}</strong><br>
+                        <small style="color: #666;">${customer?.email || user?.email || 'No email'}</small>
+                    </div>
+                </td>
+                <td>
+                    <div style="max-width: 200px; font-size: 0.9rem;">
+                        ${itemsText}
+                    </div>
+                </td>
                 <td>$${(order.total || order.amount || 0).toFixed(2)}</td>
                 <td>
-                    <span style="padding: 0.25rem 0.5rem; background: ${order.status === 'completed' ? '#27ae60' : '#f39c12'}; 
-                                color: white; border-radius: 3px;">${order.status || 'pending'}</span>
+                    <span style="padding: 0.25rem 0.5rem; background: ${order.status === 'completed' ? '#27ae60' : '#f39c12'}; color: white; border-radius: 3px; font-size: 0.8rem;">
+                        ${order.status || 'pending'}
+                    </span>
                 </td>
-                <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+                <td>${new Date(order.createdAt || order.date).toLocaleDateString()}</td>
                 <td>
-                    <button class="btn btn-edit" onclick="updateOrderStatus('${order.id}')">
-                        Update Status
-                    </button>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn btn-sm" onclick="viewOrderDetails('${order.id}')" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm" onclick="updateOrderStatus('${order.id}')" title="Update Status">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm" onclick="copyAliExpressInfo('${order.id}')" title="Copy for AliExpress">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -286,42 +354,341 @@ function loadOrders() {
 }
 
 function updateOrderStatus(orderId) {
-    const order = db.getOrderById(orderId);
+    // Find order in both database and localStorage
+    let order = db.getOrderById(orderId);
+    let isLocalStorageOrder = false;
+    
+    if (!order) {
+        const localStorageOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+        order = localStorageOrders.find(o => o.id === orderId);
+        isLocalStorageOrder = true;
+    }
+    
+    if (!order) {
+        alert('Order not found!');
+        return;
+    }
+    
     const newStatus = prompt('Enter new status (pending/completed/cancelled):', order.status || 'pending');
     
     if (newStatus && ['pending', 'completed', 'cancelled'].includes(newStatus)) {
-        db.updateOrder(orderId, { status: newStatus });
+        if (isLocalStorageOrder) {
+            // Update in localStorage
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const orderIndex = orders.findIndex(o => o.id === orderId);
+            if (orderIndex !== -1) {
+                orders[orderIndex].status = newStatus;
+                localStorage.setItem('orders', JSON.stringify(orders));
+            }
+        } else {
+            // Update in database
+            db.updateOrder(orderId, { status: newStatus });
+        }
+        
         alert('Order status updated!');
         loadOrders();
         loadDashboard();
     }
 }
 
-// AliExpress Integration
-function searchAliExpressProduct() {
-    const url = document.getElementById('aliexpressUrl').value;
-    if (!url) {
-        alert('Please enter AliExpress product URL');
+function viewOrderDetails(orderId) {
+    // Find order in both database and localStorage
+    let order = db.getOrderById(orderId);
+    let isLocalStorageOrder = false;
+    
+    if (!order) {
+        const localStorageOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+        order = localStorageOrders.find(o => o.id === orderId);
+        isLocalStorageOrder = true;
+    }
+    
+    if (!order) {
+        alert('Order not found!');
         return;
     }
-
-    const results = document.getElementById('aliexpressResults');
-    results.innerHTML = `
-        <div style="background: #e7f3ff; padding: 1.5rem; border-radius: 5px; border-left: 4px solid #2196F3;">
-            <h3>Manual Import Required</h3>
-            <p>Please copy the product details from the AliExpress page and fill in the form below:</p>
-            <ol style="margin-top: 1rem;">
-                <li>Open the AliExpress product page in a new tab</li>
-                <li>Copy product name, images, and description</li>
-                <li>Fill in the form below with the information</li>
-                <li>Click "Import Product"</li>
-            </ol>
-            <button class="btn" onclick="window.open('${url}', '_blank')" style="margin-top: 1rem; background: #2196F3; color: white;">
-                <i class="fas fa-external-link-alt"></i> Open AliExpress Page
-            </button>
-        </div>
-    `;
+    
+    const customer = order.customer;
+    const items = order.items || [];
+    
+    let details = `Order ID: ${order.id}\n`;
+    details += `Status: ${order.status || 'pending'}\n`;
+    details += `Total: $${(order.total || order.amount || 0).toFixed(2)}\n`;
+    details += `Created: ${new Date(order.createdAt || order.date).toLocaleString()}\n\n`;
+    
+    if (customer) {
+        details += `Customer Information:\n`;
+        details += `Name: ${customer.name}\n`;
+        details += `Phone: ${customer.phone}\n`;
+        details += `Email: ${customer.email}\n`;
+        details += `Address: ${customer.fullAddress || 'N/A'}\n`;
+        details += `Payment Method: ${order.paymentMethod || 'N/A'}\n\n`;
+    }
+    
+    details += `Items:\n`;
+    items.forEach((item, index) => {
+        details += `${index + 1}. ${item.name} (x${item.quantity || 1}) - $${item.price.toFixed(2)}\n`;
+    });
+    
+    alert(details);
 }
+
+function copyAliExpressInfo(orderId) {
+    // Find order in both database and localStorage
+    let order = db.getOrderById(orderId);
+    let isLocalStorageOrder = false;
+    
+    if (!order) {
+        const localStorageOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+        order = localStorageOrders.find(o => o.id === orderId);
+        isLocalStorageOrder = true;
+    }
+    
+    if (!order) {
+        alert('Order not found!');
+        return;
+    }
+    
+    const customer = order.customer;
+    if (!customer) {
+        alert('No customer information found!');
+        return;
+    }
+    
+    // Format for AliExpress order
+    let aliExpressInfo = `=== ALIEXPRESS ORDER INFO ===\n`;
+    aliExpressInfo += `Order ID: ${order.id}\n`;
+    aliExpressInfo += `Customer: ${customer.name}\n`;
+    aliExpressInfo += `Phone: ${customer.phone}\n`;
+    aliExpressInfo += `Email: ${customer.email}\n`;
+    aliExpressInfo += `Full Address:\n${customer.fullAddress}\n\n`;
+    
+    aliExpressInfo += `Items to Order:\n`;
+    const items = order.items || [];
+    items.forEach((item, index) => {
+        aliExpressInfo += `${index + 1}. ${item.name} (Quantity: ${item.quantity || 1})\n`;
+    });
+    
+    aliExpressInfo += `\nTotal Amount: $${(order.total || order.amount || 0).toFixed(2)}\n`;
+    aliExpressInfo += `Payment Method: ${order.paymentMethod || 'N/A'}\n`;
+    aliExpressInfo += `Status: ${order.status || 'pending'}\n`;
+    aliExpressInfo += `Order Date: ${new Date(order.createdAt || order.date).toLocaleString()}`;
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(aliExpressInfo).then(() => {
+        alert('AliExpress order information copied to clipboard!\n\nYou can now paste this information when creating the order on AliExpress.');
+    }).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = aliExpressInfo;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('AliExpress order information copied to clipboard!\n\nYou can now paste this information when creating the order on AliExpress.');
+    });
+}
+
+// AliExpress Integration
+let currentProductData = null;
+
+function searchAliExpressProduct() {
+    try {
+        const url = document.getElementById('aliexpressUrl').value;
+        if (!url) {
+            alert('Please enter AliExpress product URL');
+            return;
+        }
+
+        // Update API status
+        updateApiStatus('loading', 'Fetching product data...');
+
+        // Simulate API call (replace with real AliExpress API)
+        setTimeout(() => {
+            // Mock product data - replace with real API call
+            const mockProductData = {
+                title: 'Premium Luxury Watch - Gold Edition',
+                titleVi: 'Đồng hồ cao cấp phiên bản vàng',
+                originalPrice: 89.99,
+                salePrice: 59.99,
+                discount: 33,
+                rating: 4.5,
+                reviews: 1247,
+                images: [
+                    'https://via.placeholder.com/400x400/ff6b35/ffffff?text=Watch+1',
+                    'https://via.placeholder.com/400x400/ff6b35/ffffff?text=Watch+2',
+                    'https://via.placeholder.com/400x400/ff6b35/ffffff?text=Watch+3',
+                    'https://via.placeholder.com/400x400/ff6b35/ffffff?text=Watch+4'
+                ],
+                specs: [
+                    { label: 'Brand', value: 'Luxury Time' },
+                    { label: 'Material', value: 'Stainless Steel' },
+                    { label: 'Movement', value: 'Quartz' },
+                    { label: 'Water Resistance', value: '50m' },
+                    { label: 'Case Size', value: '42mm' },
+                    { label: 'Warranty', value: '2 Years' }
+                ],
+                description: 'Premium luxury watch with elegant design and superior craftsmanship. Perfect for both casual and formal occasions.',
+                descriptionVi: 'Đồng hồ cao cấp với thiết kế thanh lịch và chất lượng vượt trội. Hoàn hảo cho cả dịp thường ngày và trang trọng.',
+                keywords: 'watch, luxury, gold, premium, stainless steel',
+                tags: 'bestseller, new, limited edition'
+            };
+
+            currentProductData = mockProductData;
+            displayProductPreview(mockProductData);
+            fillImportForm(mockProductData);
+            updateApiStatus('success', 'Product data loaded successfully');
+        }, 2000);
+
+    } catch (error) {
+        console.error('Error in searchAliExpressProduct:', error);
+        updateApiStatus('error', 'Failed to fetch product data');
+        alert('Error: ' + error.message);
+    }
+}
+
+function updateApiStatus(status, message) {
+    const statusElement = document.getElementById('apiStatus');
+    const icon = statusElement.querySelector('i');
+    const text = statusElement.querySelector('span');
+    
+    statusElement.className = 'status-indicator';
+    
+    switch (status) {
+        case 'loading':
+            statusElement.style.background = '#fff3cd';
+            statusElement.style.color = '#856404';
+            icon.style.color = '#ffc107';
+            icon.className = 'fas fa-spinner fa-spin';
+            break;
+        case 'success':
+            statusElement.style.background = '#d4edda';
+            statusElement.style.color = '#155724';
+            icon.style.color = '#28a745';
+            icon.className = 'fas fa-check-circle';
+            break;
+        case 'error':
+            statusElement.style.background = '#f8d7da';
+            statusElement.style.color = '#721c24';
+            icon.style.color = '#dc3545';
+            icon.className = 'fas fa-exclamation-circle';
+            break;
+        default:
+            statusElement.style.background = '#d4edda';
+            statusElement.style.color = '#155724';
+            icon.style.color = '#28a745';
+            icon.className = 'fas fa-circle';
+    }
+    
+    text.textContent = `API Status: ${message}`;
+}
+
+function displayProductPreview(productData) {
+    const preview = document.getElementById('productPreview');
+    preview.classList.remove('hidden');
+    
+    // Update main image
+    document.getElementById('previewMainImage').src = productData.images[0];
+    
+    // Update thumbnails
+    const thumbnailGallery = document.getElementById('thumbnailGallery');
+    thumbnailGallery.innerHTML = productData.images.map((img, index) => `
+        <div class="thumbnail ${index === 0 ? 'active' : ''}" onclick="changeMainImage('${img}', this)">
+            <img src="${img}" alt="Thumbnail ${index + 1}">
+        </div>
+    `).join('');
+    
+    // Update product details
+    document.getElementById('previewTitle').textContent = productData.title;
+    document.getElementById('previewOriginalPrice').textContent = `$${productData.originalPrice.toFixed(2)}`;
+    document.getElementById('previewSalePrice').textContent = `$${productData.salePrice.toFixed(2)}`;
+    document.getElementById('previewDiscount').textContent = `${productData.discount}% OFF`;
+    
+    // Update rating
+    const ratingElement = document.getElementById('previewRating');
+    const stars = ratingElement.querySelectorAll('i');
+    const fullStars = Math.floor(productData.rating);
+    const hasHalfStar = productData.rating % 1 >= 0.5;
+    
+    stars.forEach((star, index) => {
+        if (index < fullStars) {
+            star.className = 'fas fa-star';
+        } else if (index === fullStars && hasHalfStar) {
+            star.className = 'fas fa-star-half-alt';
+        } else {
+            star.className = 'far fa-star';
+        }
+    });
+    
+    document.getElementById('previewRatingText').textContent = `(${productData.reviews} reviews)`;
+    
+    // Update specifications
+    const specsElement = document.getElementById('previewSpecs');
+    specsElement.innerHTML = productData.specs.map(spec => `
+        <div class="spec-item">
+            <span class="spec-label">${spec.label}:</span>
+            <span class="spec-value">${spec.value}</span>
+        </div>
+    `).join('');
+}
+
+function changeMainImage(imageSrc, thumbnailElement) {
+    // Update main image
+    document.getElementById('previewMainImage').src = imageSrc;
+    
+    // Update active thumbnail
+    document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
+    thumbnailElement.classList.add('active');
+}
+
+function fillImportForm(productData) {
+    // Fill basic information
+    document.getElementById('aliexpressNameEn').value = productData.title;
+    document.getElementById('aliexpressNameVi').value = productData.titleVi;
+    
+    // Fill pricing
+    document.getElementById('aliexpressOriginalPrice').value = productData.originalPrice;
+    document.getElementById('aliexpressPrice').value = productData.salePrice;
+    updateProfitMargin();
+    
+    // Fill images
+    document.getElementById('aliexpressImage').value = productData.images[0];
+    document.getElementById('aliexpressGallery').value = productData.images.slice(1).join('\n');
+    
+    // Fill descriptions
+    document.getElementById('aliexpressDescEn').value = productData.description;
+    document.getElementById('aliexpressDescVi').value = productData.descriptionVi;
+    
+    // Fill SEO
+    document.getElementById('aliexpressKeywords').value = productData.keywords;
+    document.getElementById('aliexpressTags').value = productData.tags;
+    
+    // Set default stock
+    document.getElementById('aliexpressStock').value = 50;
+}
+
+function updateProfitMargin() {
+    const originalPrice = parseFloat(document.getElementById('aliexpressOriginalPrice').value) || 0;
+    const sellingPrice = parseFloat(document.getElementById('aliexpressPrice').value) || 0;
+    
+    if (originalPrice > 0 && sellingPrice > 0) {
+        const profit = sellingPrice - originalPrice;
+        const margin = ((profit / sellingPrice) * 100).toFixed(1);
+        document.getElementById('profitMargin').value = `$${profit.toFixed(2)} (${margin}%)`;
+    } else {
+        document.getElementById('profitMargin').value = '';
+    }
+}
+
+// Add event listeners for profit margin calculation
+document.addEventListener('DOMContentLoaded', function() {
+    const priceInputs = ['aliexpressOriginalPrice', 'aliexpressPrice'];
+    priceInputs.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', updateProfitMargin);
+        }
+    });
+});
 
 function importAliExpressProduct(e) {
     e.preventDefault();
@@ -334,20 +701,42 @@ function importAliExpressProduct(e) {
         category: document.getElementById('aliexpressCategory').value,
         image: document.getElementById('aliexpressImage').value,
         descriptionEn: document.getElementById('aliexpressDescEn').value,
-        description: document.getElementById('aliexpressDescVi').value
+        description: document.getElementById('aliexpressDescVi').value,
+        keywords: document.getElementById('aliexpressKeywords').value,
+        tags: document.getElementById('aliexpressTags').value,
+        gallery: document.getElementById('aliexpressGallery').value.split('\n').filter(url => url.trim())
     };
 
     try {
-        db.addProduct(productData);
+        const newProduct = db.addProduct(productData);
         alert('Product imported successfully!');
+        
+        // Save to import history
+        const importData = {
+            id: newProduct.id,
+            nameEn: productData.nameEn,
+            nameVi: productData.name,
+            price: productData.price,
+            category: productData.category,
+            image: productData.image,
+            timestamp: new Date().toISOString(),
+            status: 'imported'
+        };
+        
+        const imports = JSON.parse(localStorage.getItem('aliexpressImports') || '[]');
+        imports.push(importData);
+        localStorage.setItem('aliexpressImports', JSON.stringify(imports));
         
         // Clear form
         document.getElementById('aliexpressUrl').value = '';
-        document.querySelector('#aliexpress form').reset();
+        document.getElementById('aliexpressForm').reset();
+        document.getElementById('productPreview').classList.add('hidden');
+        updateApiStatus('ready', 'Ready');
         
-        // Reload products and dashboard
+        // Reload products, dashboard, and history
         loadProducts();
         loadDashboard();
+        loadImportHistory();
         
         // Switch to Products tab
         document.querySelectorAll('.admin-tab')[2].click();
@@ -364,5 +753,156 @@ function autoFillProductForm(nameEn, nameVi, price, image, category) {
     document.getElementById('aliexpressImage').value = image || '';
     document.getElementById('aliexpressCategory').value = category || 'women-watches';
     document.getElementById('aliexpressStock').value = 50;
+}
+
+// Additional helper functions
+function previewImage(inputId) {
+    const imageUrl = document.getElementById(inputId).value;
+    if (imageUrl) {
+        const preview = document.getElementById('productPreview');
+        if (preview) {
+            preview.classList.remove('hidden');
+            document.getElementById('previewMainImage').src = imageUrl;
+        }
+    }
+}
+
+function clearAliExpressForm() {
+    if (confirm('Are you sure you want to clear all form data?')) {
+        document.getElementById('aliexpressForm').reset();
+        document.getElementById('productPreview').classList.add('hidden');
+        document.getElementById('aliexpressUrl').value = '';
+        updateApiStatus('ready', 'Ready');
+    }
+}
+
+function saveAsDraft() {
+    const formData = {
+        nameEn: document.getElementById('aliexpressNameEn').value,
+        nameVi: document.getElementById('aliexpressNameVi').value,
+        price: document.getElementById('aliexpressPrice').value,
+        originalPrice: document.getElementById('aliexpressOriginalPrice').value,
+        stock: document.getElementById('aliexpressStock').value,
+        category: document.getElementById('aliexpressCategory').value,
+        image: document.getElementById('aliexpressImage').value,
+        gallery: document.getElementById('aliexpressGallery').value,
+        descriptionEn: document.getElementById('aliexpressDescEn').value,
+        descriptionVi: document.getElementById('aliexpressDescVi').value,
+        keywords: document.getElementById('aliexpressKeywords').value,
+        tags: document.getElementById('aliexpressTags').value,
+        timestamp: new Date().toISOString()
+    };
+
+    // Save to localStorage
+    const drafts = JSON.parse(localStorage.getItem('aliexpressDrafts') || '[]');
+    drafts.push(formData);
+    localStorage.setItem('aliexpressDrafts', JSON.stringify(drafts));
+
+    alert('Draft saved successfully!');
+    loadImportHistory();
+}
+
+function loadImportHistory() {
+    const historyElement = document.getElementById('importHistory');
+    if (!historyElement) return;
+
+    const drafts = JSON.parse(localStorage.getItem('aliexpressDrafts') || '[]');
+    const imports = JSON.parse(localStorage.getItem('aliexpressImports') || '[]');
+    
+    const allItems = [...imports, ...drafts].sort((a, b) => 
+        new Date(b.timestamp) - new Date(a.timestamp)
+    );
+
+    if (allItems.length === 0) {
+        historyElement.innerHTML = '<p style="text-align: center; color: #6c757d;">No import history found.</p>';
+        return;
+    }
+
+    historyElement.innerHTML = allItems.map(item => `
+        <div class="history-item">
+            <img src="${item.image || 'https://via.placeholder.com/50x50'}" alt="Product">
+            <div class="history-details">
+                <h5>${item.nameEn || 'Untitled Product'}</h5>
+                <p>${item.category} • $${item.price} • ${new Date(item.timestamp).toLocaleDateString()}</p>
+            </div>
+            <div class="history-actions">
+                ${item.status === 'draft' ? 
+                    `<button class="btn btn-info" onclick="loadDraft('${item.timestamp}')">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>` : 
+                    `<button class="btn btn-secondary" onclick="viewProduct('${item.id}')">
+                        <i class="fas fa-eye"></i> View
+                    </button>`
+                }
+                <button class="btn btn-secondary" onclick="deleteHistoryItem('${item.timestamp}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function loadDraft(timestamp) {
+    const drafts = JSON.parse(localStorage.getItem('aliexpressDrafts') || '[]');
+    const draft = drafts.find(d => d.timestamp === timestamp);
+    
+    if (draft) {
+        // Fill form with draft data
+        Object.keys(draft).forEach(key => {
+            const element = document.getElementById(`aliexpress${key.charAt(0).toUpperCase() + key.slice(1)}`);
+            if (element) {
+                element.value = draft[key];
+            }
+        });
+        
+        // Update profit margin
+        updateProfitMargin();
+        
+        // Show preview if image exists
+        if (draft.image) {
+            previewImage('aliexpressImage');
+        }
+        
+        alert('Draft loaded successfully!');
+    }
+}
+
+function deleteHistoryItem(timestamp) {
+    if (confirm('Are you sure you want to delete this item?')) {
+        const drafts = JSON.parse(localStorage.getItem('aliexpressDrafts') || '[]');
+        const imports = JSON.parse(localStorage.getItem('aliexpressImports') || '[]');
+        
+        const updatedDrafts = drafts.filter(d => d.timestamp !== timestamp);
+        const updatedImports = imports.filter(i => i.timestamp !== timestamp);
+        
+        localStorage.setItem('aliexpressDrafts', JSON.stringify(updatedDrafts));
+        localStorage.setItem('aliexpressImports', JSON.stringify(updatedImports));
+        
+        loadImportHistory();
+    }
+}
+
+// Initialize import history when tab is loaded
+function showTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.admin-content').forEach(content => content.classList.remove('active'));
+
+    // Show selected tab
+    event.target.classList.add('active');
+    document.getElementById(tabName).classList.add('active');
+
+    // Reload data based on tab
+    if (tabName === 'users') {
+        loadUsers();
+    } else if (tabName === 'products') {
+        loadProducts();
+    } else if (tabName === 'orders') {
+        loadOrders();
+    } else if (tabName === 'dashboard') {
+        loadDashboard();
+    } else if (tabName === 'aliexpress') {
+        loadImportHistory();
+    }
 }
 

@@ -98,6 +98,72 @@
         .back-button:hover {
             background: #555;
         }
+
+        /* Form improvements */
+        .checkout-form {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+
+        .checkout-form h2 {
+            color: #333;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 0.5rem;
+        }
+
+        .checkout-form label {
+            color: #555;
+            font-weight: 600;
+        }
+
+        .checkout-form input,
+        .checkout-form select,
+        .checkout-form textarea {
+            border: 2px solid #e9ecef;
+            transition: border-color 0.3s;
+        }
+
+        .checkout-form input:focus,
+        .checkout-form select:focus,
+        .checkout-form textarea:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        .checkout-form button {
+            background: linear-gradient(135deg, #d4af37, #b8941f);
+            transition: all 0.3s;
+        }
+
+        .checkout-form button:hover {
+            background: linear-gradient(135deg, #b8941f, #9a7d1a);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+
+        #fullAddress {
+            background: white;
+            padding: 1rem;
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+            white-space: pre-line;
+            min-height: 60px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .checkout-form {
+                padding: 1rem;
+            }
+            
+            .checkout-form div[style*="grid-template-columns"] {
+                display: block !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -132,6 +198,9 @@
             const cartData = localStorage.getItem('cart');
             const cart = cartData ? JSON.parse(cartData) : [];
             
+            console.log('Current Order:', currentOrder);
+            console.log('Cart Data:', cart);
+            
             // Nếu không có dữ liệu
             if (!currentOrder && (!cart || cart.length === 0)) {
                 orderContent.innerHTML = `
@@ -139,6 +208,9 @@
                         <i class="fas fa-shopping-cart"></i>
                         <h3>Giỏ hàng trống</h3>
                         <p>Bạn chưa có sản phẩm nào trong giỏ hàng.</p>
+                        <a href="index.html" style="display: inline-block; margin-top: 1rem; padding: 0.8rem 1.5rem; background: #d4af37; color: white; text-decoration: none; border-radius: 5px;">
+                            <i class="fas fa-shopping-bag"></i> Tiếp tục mua sắm
+                        </a>
                     </div>
                 `;
                 return;
@@ -151,24 +223,34 @@
             if (currentOrder) {
                 // Nếu có đơn hàng hiện tại, ưu tiên hiển thị
                 items.push({
-                    name: currentOrder.productName,
-                    price: currentOrder.amount
+                    id: currentOrder.productId || 'unknown',
+                    name: currentOrder.productName || 'Unknown Product',
+                    price: currentOrder.amount || 0,
+                    quantity: currentOrder.quantity || 1
                 });
-                total = currentOrder.amount;
+                total = currentOrder.amount || 0;
             } else if (cart && cart.length > 0) {
                 // Nếu không có currentOrder, hiển thị cart
-                items = cart;
-                total = cart.reduce((sum, item) => sum + item.price, 0);
+                items = cart.map(item => ({
+                    id: item.id || 'unknown',
+                    name: item.name || 'Unknown Product',
+                    price: item.price || 0,
+                    quantity: item.quantity || 1
+                }));
+                total = cart.reduce((sum, item) => sum + (item.price || 0), 0);
             }
             
             // Hiển thị thông tin đơn hàng
             let html = '<div class="order-info">';
-            html += '<h2>Thông tin đơn hàng</h2>';
+            html += '<h2><i class="fas fa-shopping-bag"></i> Thông tin đơn hàng</h2>';
             
-            items.forEach(item => {
+            items.forEach((item, index) => {
                 html += `
                     <div class="order-item">
-                        <span class="order-item-name">${item.name}</span>
+                        <div>
+                            <span class="order-item-name">${item.name}</span>
+                            <br><small style="color: #666;">Số lượng: ${item.quantity}</small>
+                        </div>
                         <span class="order-item-price">$${item.price.toFixed(2)}</span>
                     </div>
                 `;
@@ -183,35 +265,137 @@
             
             html += '</div>';
             
-            // Hiển thị form thanh toán
+            // Hiển thị form thanh toán với địa chỉ chi tiết
             html += `
                 <div class="checkout-form">
-                    <h2>Thông tin thanh toán</h2>
-                    <p style="margin-bottom: 1rem;">Vui lòng điền thông tin để hoàn tất thanh toán.</p>
+                    <h2><i class="fas fa-credit-card"></i> Thông tin thanh toán</h2>
+                    <p style="margin-bottom: 1rem; color: #666;">Vui lòng điền đầy đủ thông tin để hoàn tất thanh toán và giao hàng.</p>
                     
                     <form id="paymentForm" style="margin-top: 2rem;">
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Email:</label>
-                            <input type="email" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Họ và tên *</label>
+                                <input type="text" id="customerName" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Số điện thoại *</label>
+                                <input type="tel" id="customerPhone" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
+                            </div>
                         </div>
                         
                         <div style="margin-bottom: 1rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Họ và tên:</label>
-                            <input type="text" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Email *</label>
+                            <input type="email" id="customerEmail" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
                         </div>
                         
                         <div style="margin-bottom: 1rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Số điện thoại:</label>
-                            <input type="tel" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Tỉnh/Thành phố *</label>
+                            <select id="customerCity" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
+                                <option value="">Chọn tỉnh/thành phố</option>
+                                <option value="Hà Nội">Hà Nội</option>
+                                <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
+                                <option value="Đà Nẵng">Đà Nẵng</option>
+                                <option value="Hải Phòng">Hải Phòng</option>
+                                <option value="Cần Thơ">Cần Thơ</option>
+                                <option value="An Giang">An Giang</option>
+                                <option value="Bà Rịa - Vũng Tàu">Bà Rịa - Vũng Tàu</option>
+                                <option value="Bắc Giang">Bắc Giang</option>
+                                <option value="Bắc Kạn">Bắc Kạn</option>
+                                <option value="Bạc Liêu">Bạc Liêu</option>
+                                <option value="Bắc Ninh">Bắc Ninh</option>
+                                <option value="Bến Tre">Bến Tre</option>
+                                <option value="Bình Định">Bình Định</option>
+                                <option value="Bình Dương">Bình Dương</option>
+                                <option value="Bình Phước">Bình Phước</option>
+                                <option value="Bình Thuận">Bình Thuận</option>
+                                <option value="Cà Mau">Cà Mau</option>
+                                <option value="Cao Bằng">Cao Bằng</option>
+                                <option value="Đắk Lắk">Đắk Lắk</option>
+                                <option value="Đắk Nông">Đắk Nông</option>
+                                <option value="Điện Biên">Điện Biên</option>
+                                <option value="Đồng Nai">Đồng Nai</option>
+                                <option value="Đồng Tháp">Đồng Tháp</option>
+                                <option value="Gia Lai">Gia Lai</option>
+                                <option value="Hà Giang">Hà Giang</option>
+                                <option value="Hà Nam">Hà Nam</option>
+                                <option value="Hà Tĩnh">Hà Tĩnh</option>
+                                <option value="Hải Dương">Hải Dương</option>
+                                <option value="Hậu Giang">Hậu Giang</option>
+                                <option value="Hòa Bình">Hòa Bình</option>
+                                <option value="Hưng Yên">Hưng Yên</option>
+                                <option value="Khánh Hòa">Khánh Hòa</option>
+                                <option value="Kiên Giang">Kiên Giang</option>
+                                <option value="Kon Tum">Kon Tum</option>
+                                <option value="Lai Châu">Lai Châu</option>
+                                <option value="Lâm Đồng">Lâm Đồng</option>
+                                <option value="Lạng Sơn">Lạng Sơn</option>
+                                <option value="Lào Cai">Lào Cai</option>
+                                <option value="Long An">Long An</option>
+                                <option value="Nam Định">Nam Định</option>
+                                <option value="Nghệ An">Nghệ An</option>
+                                <option value="Ninh Bình">Ninh Bình</option>
+                                <option value="Ninh Thuận">Ninh Thuận</option>
+                                <option value="Phú Thọ">Phú Thọ</option>
+                                <option value="Phú Yên">Phú Yên</option>
+                                <option value="Quảng Bình">Quảng Bình</option>
+                                <option value="Quảng Nam">Quảng Nam</option>
+                                <option value="Quảng Ngãi">Quảng Ngãi</option>
+                                <option value="Quảng Ninh">Quảng Ninh</option>
+                                <option value="Quảng Trị">Quảng Trị</option>
+                                <option value="Sóc Trăng">Sóc Trăng</option>
+                                <option value="Sơn La">Sơn La</option>
+                                <option value="Tây Ninh">Tây Ninh</option>
+                                <option value="Thái Bình">Thái Bình</option>
+                                <option value="Thái Nguyên">Thái Nguyên</option>
+                                <option value="Thanh Hóa">Thanh Hóa</option>
+                                <option value="Thừa Thiên Huế">Thừa Thiên Huế</option>
+                                <option value="Tiền Giang">Tiền Giang</option>
+                                <option value="Trà Vinh">Trà Vinh</option>
+                                <option value="Tuyên Quang">Tuyên Quang</option>
+                                <option value="Vĩnh Long">Vĩnh Long</option>
+                                <option value="Vĩnh Phúc">Vĩnh Phúc</option>
+                                <option value="Yên Bái">Yên Bái</option>
+                            </select>
                         </div>
                         
                         <div style="margin-bottom: 1rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Địa chỉ:</label>
-                            <textarea required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; min-height: 100px;"></textarea>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Quận/Huyện *</label>
+                            <input type="text" id="customerDistrict" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;" placeholder="Ví dụ: Quận 1, Huyện Bình Chánh...">
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Phường/Xã *</label>
+                            <input type="text" id="customerWard" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;" placeholder="Ví dụ: Phường Bến Nghé, Xã An Phú...">
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Số nhà, tên đường *</label>
+                            <input type="text" id="customerStreet" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;" placeholder="Ví dụ: 123 Nguyễn Huệ, Tòa nhà ABC...">
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Ghi chú địa chỉ (tùy chọn)</label>
+                            <textarea id="customerNote" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; min-height: 80px; font-size: 1rem;" placeholder="Ví dụ: Chung cư ABC, tầng 5, căn hộ 501..."></textarea>
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Phương thức thanh toán *</label>
+                            <select id="paymentMethod" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
+                                <option value="">Chọn phương thức thanh toán</option>
+                                <option value="cod">Thanh toán khi nhận hàng (COD)</option>
+                                <option value="bank_transfer">Chuyển khoản ngân hàng</option>
+                                <option value="bitpay">BitPay (Bitcoin)</option>
+                                <option value="paypal">PayPal</option>
+                            </select>
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 5px; margin-bottom: 1rem;">
+                            <h4 style="margin-bottom: 0.5rem; color: #333;">Địa chỉ giao hàng đầy đủ:</h4>
+                            <div id="fullAddress" style="color: #666; font-style: italic;">Sẽ hiển thị khi bạn điền thông tin</div>
                         </div>
                         
                         <button type="submit" style="width: 100%; padding: 1rem; background: #d4af37; color: white; border: none; border-radius: 5px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: background 0.3s;">
-                            Thanh toán $${total.toFixed(2)}
+                            <i class="fas fa-credit-card"></i> Hoàn tất đơn hàng $${total.toFixed(2)}
                         </button>
                     </form>
                 </div>
@@ -224,15 +408,89 @@
             if (form) {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    alert('Đơn hàng đã được gửi! Vui lòng hoàn tất thanh toán qua BitPay hoặc phương thức bạn đã chọn.');
-                    // Ở đây bạn có thể tích hợp với BitPay hoặc cổng thanh toán khác
+                    processOrder(items, total);
                 });
+            }
+            
+            // Update full address preview
+            updateFullAddress();
+        }
+        
+        function updateFullAddress() {
+            const name = document.getElementById('customerName')?.value || '';
+            const phone = document.getElementById('customerPhone')?.value || '';
+            const city = document.getElementById('customerCity')?.value || '';
+            const district = document.getElementById('customerDistrict')?.value || '';
+            const ward = document.getElementById('customerWard')?.value || '';
+            const street = document.getElementById('customerStreet')?.value || '';
+            const note = document.getElementById('customerNote')?.value || '';
+            
+            const fullAddressElement = document.getElementById('fullAddress');
+            if (fullAddressElement) {
+                if (name && phone && city && district && ward && street) {
+                    let fullAddress = `${name} | ${phone}\n`;
+                    fullAddress += `${street}, ${ward}, ${district}, ${city}`;
+                    if (note) {
+                        fullAddress += `\nGhi chú: ${note}`;
+                    }
+                    fullAddressElement.textContent = fullAddress;
+                } else {
+                    fullAddressElement.textContent = 'Sẽ hiển thị khi bạn điền thông tin';
+                }
             }
         }
         
-        // Load dữ liệu khi trang được tải
+        function processOrder(items, total) {
+            const orderData = {
+                id: 'ORDER_' + Date.now(),
+                items: items,
+                total: total,
+                customer: {
+                    name: document.getElementById('customerName').value,
+                    phone: document.getElementById('customerPhone').value,
+                    email: document.getElementById('customerEmail').value,
+                    city: document.getElementById('customerCity').value,
+                    district: document.getElementById('customerDistrict').value,
+                    ward: document.getElementById('customerWard').value,
+                    street: document.getElementById('customerStreet').value,
+                    note: document.getElementById('customerNote').value,
+                    fullAddress: document.getElementById('fullAddress').textContent
+                },
+                paymentMethod: document.getElementById('paymentMethod').value,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+            
+            // Save order to localStorage
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            orders.push(orderData);
+            localStorage.setItem('orders', JSON.stringify(orders));
+            
+            // Clear cart and current order
+            localStorage.removeItem('cart');
+            localStorage.removeItem('currentOrder');
+            
+            // Show success message
+            alert('Đơn hàng đã được tạo thành công!\nMã đơn hàng: ' + orderData.id + '\n\nThông tin đã được lưu để tạo đơn hàng AliExpress.');
+            
+            // Redirect to home
+            window.location.href = 'index.html';
+        }
+        
+        // Add event listeners for address preview
         document.addEventListener('DOMContentLoaded', function() {
             loadOrderData();
+            
+            // Add event listeners for address fields
+            setTimeout(() => {
+                const addressFields = ['customerName', 'customerPhone', 'customerCity', 'customerDistrict', 'customerWard', 'customerStreet', 'customerNote'];
+                addressFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        field.addEventListener('input', updateFullAddress);
+                    }
+                });
+            }, 100);
         });
     </script>
 </body>

@@ -6,6 +6,11 @@ class Auth {
     }
 
     init() {
+        // Skip UI update for admin page
+        if (window.location.pathname.includes('admin.html')) {
+            return;
+        }
+
         // Check if user is logged in
         if (this.currentUser) {
             this.showLoggedInMenu(this.currentUser);
