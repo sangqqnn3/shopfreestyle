@@ -24,23 +24,10 @@ document.addEventListener('DOMContentLoaded', function() {
 // Initialize Language Switcher
 function initLanguageSwitcher() {
     const switcher = document.getElementById('languageSwitcher');
-    switcher.innerHTML = `
-        <button class="lang-btn ${i18n.getLanguage() === 'en' ? 'active' : ''}" 
-                onclick="changeLanguage('en')" data-lang="en">
-            🇺🇸 EN
-        </button>
-        <button class="lang-btn ${i18n.getLanguage() === 'vi' ? 'active' : ''}" 
-                onclick="changeLanguage('vi')" data-lang="vi">
-            🇻🇳 VI
-        </button>
-    `;
+    if (switcher) switcher.innerHTML = '';
 }
 
-function changeLanguage(lang) {
-    i18n.setLanguage(lang);
-    initLanguageSwitcher();
-    loadProducts(); // Reload products with new language
-}
+function changeLanguage(lang) { /* no-op in English-only mode */ }
 
 // Load Products
 function loadProducts() {

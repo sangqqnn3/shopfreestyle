@@ -1,7 +1,7 @@
 // i18n - Internationalization Manager
 class I18n {
     constructor() {
-        this.currentLang = localStorage.getItem('language') || 'en';
+        this.currentLang = 'en';
         this.translations = {
             en: {
                 // Navigation
@@ -57,61 +57,6 @@ class I18n {
                 save: 'Save',
                 delete: 'Delete',
                 edit: 'Edit'
-            },
-            vi: {
-                // Navigation
-                home: 'Trang chủ',
-                watches: 'Đồng hồ',
-                jewelry: 'Trang sức',
-                bags: 'Túi xách',
-                about: 'Giới thiệu',
-                login: 'Đăng nhập',
-                register: 'Đăng ký',
-                logout: 'Đăng xuất',
-                admin: 'Quản trị',
-                cart: 'Giỏ hàng',
-                
-                // Hero Section
-                heroTitle: 'Khám phá bộ sưu tập mới',
-                heroSubtitle: 'Đồng hồ, trang sức và túi xách cao cấp từ các thương hiệu uy tín',
-                shopNow: 'Mua ngay',
-                
-                // Categories
-                shopByCategory: 'Mua sắm theo danh mục',
-                womensWatches: 'Đồng hồ nữ',
-                mensWatches: 'Đồng hồ nam',
-                jewelry: 'Trang sức',
-                bags: 'Túi xách',
-                
-                // Products
-                bestselling: 'Sản phẩm bán chạy',
-                new: 'Mới',
-                addToCart: 'Thêm vào giỏ',
-                buyNow: 'Mua ngay với BitPay',
-                
-                // Footer
-                products: 'Sản phẩm',
-                guides: 'Hướng dẫn',
-                aboutUs: 'Về chúng tôi',
-                support: 'Hỗ trợ',
-                
-                // Cart
-                cartEmpty: 'Giỏ hàng của bạn đang trống',
-                checkout: 'Thanh toán',
-                total: 'Tổng cộng',
-                
-                // Payment
-                paymentMethods: 'Chấp nhận thanh toán',
-                
-                // General
-                loading: 'Đang tải...',
-                error: 'Lỗi',
-                success: 'Thành công',
-                submit: 'Gửi',
-                cancel: 'Hủy',
-                save: 'Lưu',
-                delete: 'Xóa',
-                edit: 'Sửa'
             }
         };
     }
@@ -121,8 +66,8 @@ class I18n {
     }
 
     setLanguage(lang) {
-        this.currentLang = lang;
-        localStorage.setItem('language', lang);
+        // Force English only
+        this.currentLang = 'en';
         this.updatePage();
     }
 
@@ -161,18 +106,6 @@ const i18n = new I18n();
 
 // Language Switcher Component
 function createLanguageSwitcher() {
-    return `
-        <div class="language-switcher">
-            <button class="lang-btn ${i18n.getLanguage() === 'en' ? 'active' : ''}" 
-                    onclick="i18n.setLanguage('en')" 
-                    data-lang="en">
-                🇺🇸 EN
-            </button>
-            <button class="lang-btn ${i18n.getLanguage() === 'vi' ? 'active' : ''}" 
-                    onclick="i18n.setLanguage('vi')" 
-                    data-lang="vi">
-                🇻🇳 VI
-            </button>
-        </div>
-    `;
+    // English-only; hide switcher
+    return '';
 }

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thanh toán - LUXE DROPSHIP</title>
+    <title>Checkout - Shop Free Style</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -168,23 +168,30 @@
 </head>
 <body>
     <div class="container">
-        <h1>🛒 Thanh toán</h1>
+        <h1>🛒 Checkout</h1>
         
         <div id="orderContent">
             <div class="no-items">
                 <i class="fas fa-shopping-cart"></i>
-                <p>Đang tải thông tin đơn hàng...</p>
+                <p>Loading order information...</p>
             </div>
         </div>
 
         <a href="javascript:history.back()" class="back-button">
-            <i class="fas fa-arrow-left"></i> Quay lại
+            <i class="fas fa-arrow-left"></i> Back
         </a>
     </div>
 
     <script src="js/database.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/auth.js"></script>
+    <script>
+        // Configure your backend proxy path for NOWPayments
+        // Example backend endpoints expected:
+        // POST /api/nowpayments/invoice  -> creates invoice and returns { invoice_url }
+        window.paymentsConfig = { nowpayments: { proxyBase: '' } }; // e.g. '/api/nowpayments'
+    </script>
+    <script src="js/payments.js"></script>
     <script>
         // Đọc dữ liệu từ localStorage
         function loadOrderData() {
@@ -206,10 +213,10 @@
                 orderContent.innerHTML = `
                     <div class="no-items">
                         <i class="fas fa-shopping-cart"></i>
-                        <h3>Giỏ hàng trống</h3>
-                        <p>Bạn chưa có sản phẩm nào trong giỏ hàng.</p>
+                        <h3>Cart is empty</h3>
+                        <p>You have no items in your cart.</p>
                         <a href="index.html" style="display: inline-block; margin-top: 1rem; padding: 0.8rem 1.5rem; background: #d4af37; color: white; text-decoration: none; border-radius: 5px;">
-                            <i class="fas fa-shopping-bag"></i> Tiếp tục mua sắm
+                            <i class="fas fa-shopping-bag"></i> Continue shopping
                         </a>
                     </div>
                 `;
@@ -251,14 +258,14 @@
             
             // Hiển thị thông tin đơn hàng
             let html = '<div class="order-info">';
-            html += '<h2><i class="fas fa-shopping-bag"></i> Thông tin đơn hàng</h2>';
+            html += '<h2><i class="fas fa-shopping-bag"></i> Order Information</h2>';
             
             items.forEach((item, index) => {
                 html += `
                     <div class="order-item">
                         <div>
                             <span class="order-item-name">${item.name}</span>
-                            <br><small style="color: #666;">Số lượng: ${item.quantity}</small>
+                            <br><small style="color: #666;">Quantity: ${item.quantity}</small>
                         </div>
                         <span class="order-item-price">$${item.price.toFixed(2)}</span>
                     </div>
@@ -267,7 +274,7 @@
             
             html += `
                 <div class="total">
-                    <span>Tổng cộng:</span>
+                    <span>Total:</span>
                     <span>$${total.toFixed(2)}</span>
                 </div>
             `;
@@ -277,17 +284,17 @@
             // Hiển thị form thanh toán với địa chỉ chi tiết
             html += `
                 <div class="checkout-form">
-                    <h2><i class="fas fa-credit-card"></i> Thông tin thanh toán</h2>
-                    <p style="margin-bottom: 1rem; color: #666;">Vui lòng điền đầy đủ thông tin để hoàn tất thanh toán và giao hàng.</p>
+                    <h2><i class="fas fa-credit-card"></i> Billing & Shipping</h2>
+                    <p style="margin-bottom: 1rem; color: #666;">Please fill in your details to complete payment and delivery.</p>
                     
                     <form id="paymentForm" style="margin-top: 2rem;">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                             <div>
-                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Họ và tên *</label>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Full name *</label>
                                 <input type="text" id="customerName" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
                             </div>
                             <div>
-                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Số điện thoại *</label>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Phone number *</label>
                                 <input type="tel" id="customerPhone" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
                             </div>
                         </div>
@@ -298,9 +305,9 @@
                         </div>
                         
                         <div style="margin-bottom: 1rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Tỉnh/Thành phố *</label>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">City/Province *</label>
                             <select id="customerCity" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
-                                <option value="">Chọn tỉnh/thành phố</option>
+                                <option value="">Select City/Province</option>
                                 <option value="Hà Nội">Hà Nội</option>
                                 <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
                                 <option value="Đà Nẵng">Đà Nẵng</option>
@@ -368,43 +375,41 @@
                         </div>
                         
                         <div style="margin-bottom: 1rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Quận/Huyện *</label>
-                            <input type="text" id="customerDistrict" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;" placeholder="Ví dụ: Quận 1, Huyện Bình Chánh...">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">District *</label>
+                            <input type="text" id="customerDistrict" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;" placeholder="e.g., District 1">
                         </div>
                         
                         <div style="margin-bottom: 1rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Phường/Xã *</label>
-                            <input type="text" id="customerWard" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;" placeholder="Ví dụ: Phường Bến Nghé, Xã An Phú...">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Ward *</label>
+                            <input type="text" id="customerWard" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;" placeholder="e.g., Ward Ben Nghe">
                         </div>
                         
                         <div style="margin-bottom: 1rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Số nhà, tên đường *</label>
-                            <input type="text" id="customerStreet" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;" placeholder="Ví dụ: 123 Nguyễn Huệ, Tòa nhà ABC...">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Street & Number *</label>
+                            <input type="text" id="customerStreet" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;" placeholder="e.g., 123 Nguyen Hue, ABC Building">
                         </div>
                         
                         <div style="margin-bottom: 1rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Ghi chú địa chỉ (tùy chọn)</label>
-                            <textarea id="customerNote" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; min-height: 80px; font-size: 1rem;" placeholder="Ví dụ: Chung cư ABC, tầng 5, căn hộ 501..."></textarea>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Address notes (optional)</label>
+                            <textarea id="customerNote" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; min-height: 80px; font-size: 1rem;" placeholder="Apartment, floor, unit, etc."></textarea>
                         </div>
                         
                         <div style="margin-bottom: 1rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Phương thức thanh toán *</label>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Payment method *</label>
                             <select id="paymentMethod" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
-                                <option value="">Chọn phương thức thanh toán</option>
-                                <option value="cod">Thanh toán khi nhận hàng (COD)</option>
-                                <option value="bank_transfer">Chuyển khoản ngân hàng</option>
-                                <option value="bitpay">BitPay (Bitcoin)</option>
-                                <option value="paypal">PayPal</option>
+                                <option value="">Select payment method</option>
+                                <option value="bitpay">Crypto (BitPay)</option>
+                                <option value="card">Visa/Mastercard</option>
                             </select>
                         </div>
                         
                         <div style="background: #f8f9fa; padding: 1rem; border-radius: 5px; margin-bottom: 1rem;">
-                            <h4 style="margin-bottom: 0.5rem; color: #333;">Địa chỉ giao hàng đầy đủ:</h4>
-                            <div id="fullAddress" style="color: #666; font-style: italic;">Sẽ hiển thị khi bạn điền thông tin</div>
+                            <h4 style="margin-bottom: 0.5rem; color: #333;">Full shipping address:</h4>
+                            <div id="fullAddress" style="color: #666; font-style: italic;">Will display when you fill in details</div>
                         </div>
                         
                         <button type="submit" style="width: 100%; padding: 1rem; background: #d4af37; color: white; border: none; border-radius: 5px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: background 0.3s;">
-                            <i class="fas fa-credit-card"></i> Hoàn tất đơn hàng $${total.toFixed(2)}
+                            <i class="fas fa-credit-card"></i> Complete order $${total.toFixed(2)}
                         </button>
                     </form>
                 </div>
@@ -449,7 +454,7 @@
             }
         }
         
-        function processOrder(items, total) {
+        async function processOrder(items, total) {
             const orderData = {
                 id: 'ORDER_' + Date.now(),
                 items: items,
@@ -475,15 +480,30 @@
             orders.push(orderData);
             localStorage.setItem('orders', JSON.stringify(orders));
             
-            // Clear cart and current order
-            localStorage.removeItem('cart');
-            localStorage.removeItem('currentOrder');
-            
-            // Show success message
-            alert('Đơn hàng đã được tạo thành công!\nMã đơn hàng: ' + orderData.id + '\n\nThông tin đã được lưu để tạo đơn hàng AliExpress.');
-            
-            // Redirect to home
-            window.location.href = 'index.html';
+            // Create NOWPayments invoice and redirect (for both Crypto and Card flows)
+            try {
+                const invoice = await window.payments.nowpayments.createInvoice({
+                    amount: orderData.total,
+                    orderId: orderData.id,
+                    description: `Order ${orderData.id}`,
+                    customerEmail: orderData.customer.email,
+                    returnUrl: window.location.origin + '/index.html',
+                    cancelUrl: window.location.origin + '/payout.html'
+                });
+
+                // Clear cart and current order before redirect
+                localStorage.removeItem('cart');
+                localStorage.removeItem('currentOrder');
+
+                if (invoice && invoice.invoice_url) {
+                    window.location.href = invoice.invoice_url;
+                    return;
+                }
+                alert('Invoice created but no URL returned.');
+            } catch (e) {
+                alert('Cannot create NOWPayments invoice. Please configure payments proxy.');
+                console.error(e);
+            }
         }
         
         // Add event listeners for address preview
