@@ -117,9 +117,9 @@ body {
 
 /* User Dropdown */
 .user-dropdown {
-    position: absolute;
-    top: 64px;
-    right: 0;
+    position: fixed;
+    top: 72px;
+    right: 2rem;
     background: white;
     box-shadow: var(--shadow);
     border-radius: 5px;

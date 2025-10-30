@@ -219,9 +219,18 @@
             // Tính tổng tiền
             let total = 0;
             let items = [];
-            
-            if (currentOrder) {
-                // Nếu có đơn hàng hiện tại, ưu tiên hiển thị
+
+            if (currentOrder && Array.isArray(currentOrder.items)) {
+                // Trường hợp đi từ giỏ hàng (currentOrder dạng { items, total })
+                items = currentOrder.items.map(it => ({
+                    id: it.id || 'unknown',
+                    name: it.name || 'Unknown Product',
+                    price: it.price || 0,
+                    quantity: it.quantity || 1
+                }));
+                total = currentOrder.total || items.reduce((s, it) => s + (it.price || 0), 0);
+            } else if (currentOrder) {
+                // Trường hợp Mua nhanh từ danh mục (currentOrder dạng { productName, amount })
                 items.push({
                     id: currentOrder.productId || 'unknown',
                     name: currentOrder.productName || 'Unknown Product',
