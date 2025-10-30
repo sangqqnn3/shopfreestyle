@@ -320,27 +320,38 @@ function setupEventListeners() {
 
 // Search Products
 function searchProducts(event) {
-    if (event.key === 'Enter') {
-        const query = event.target.value.toLowerCase();
-        const products = db.getProducts();
-        const lang = i18n.getLanguage();
-        
-        const results = products.filter(product => {
-            const name = lang === 'en' ? product.nameEn : product.name;
-            return name.toLowerCase().includes(query);
-        });
-        
-        const searchResults = document.getElementById('searchResults');
-        if (results.length === 0) {
-            searchResults.innerHTML = '<p>No products found</p>';
-        } else {
-            searchResults.innerHTML = results.map(product => `
-                <div onclick="closeSearch(); window.location.href='#products'; addToCart('${product.id}')" 
-                     style="padding: 1rem; border-bottom: 1px solid #ddd; cursor: pointer;">
-                    <strong>${lang === 'en' ? product.nameEn : product.name}</strong> - $${product.price.toFixed(2)}
-                </div>
-            `).join('');
-        }
+    const query = event.target.value.toLowerCase().trim();
+    const products = db.getProducts();
+    const lang = i18n.getLanguage();
+
+    const results = products.filter(product => {
+        const name = lang === 'en' ? product.nameEn : product.name;
+        const category = product.category || '';
+        const keywords = (product.keywords || '').toLowerCase();
+        const tags = (product.tags || '').toLowerCase();
+        return (
+            name.toLowerCase().includes(query) ||
+            category.toLowerCase().includes(query) ||
+            keywords.includes(query) ||
+            tags.includes(query)
+        );
+    });
+
+    const searchResults = document.getElementById('searchResults');
+    if (!query) {
+        searchResults.innerHTML = '<p>Type to search products...</p>';
+        return;
+    }
+
+    if (results.length === 0) {
+        searchResults.innerHTML = '<p>No products found</p>';
+    } else {
+        searchResults.innerHTML = results.map(product => `
+            <div onclick="closeSearch(); window.location.href='#products'; addToCart('${product.id}')" 
+                 style="padding: 1rem; border-bottom: 1px solid #ddd; cursor: pointer;">
+                <strong>${lang === 'en' ? product.nameEn : product.name}</strong> - $${product.price.toFixed(2)}
+            </div>
+        `).join('');
     }
 }
 

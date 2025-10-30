@@ -555,7 +555,13 @@
     </div>
 
     <script src="js/database.js"></script>
+    <script src="js/i18n.js"></script>
     <script src="js/auth.js"></script>
+    <script>
+        // Set your backend proxy (leave empty to use mock/fallback)
+        window.aliConfig = { apiBase: '' }; // e.g. '/api/aliexpress'
+    </script>
+    <script src="js/aliexpress.js"></script>
     <script src="js/admin.js"></script>
 </body>
 </html>

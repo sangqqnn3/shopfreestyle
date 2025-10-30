@@ -491,7 +491,7 @@ function copyAliExpressInfo(orderId) {
 // AliExpress Integration
 let currentProductData = null;
 
-function searchAliExpressProduct() {
+async function searchAliExpressProduct() {
     try {
         const url = document.getElementById('aliexpressUrl').value;
         if (!url) {
@@ -499,13 +499,15 @@ function searchAliExpressProduct() {
             return;
         }
 
-        // Update API status
         updateApiStatus('loading', 'Fetching product data...');
 
-        // Simulate API call (replace with real AliExpress API)
-        setTimeout(() => {
-            // Mock product data - replace with real API call
-            const mockProductData = {
+        let data;
+        if (window.aliExpressAPI && window.aliExpressAPI.enabled) {
+            // Use real proxy-backed API if configured
+            data = await window.aliExpressAPI.fetchProductByUrl(url);
+        } else {
+            // Fallback: mock data for demo
+            data = {
                 title: 'Premium Luxury Watch - Gold Edition',
                 titleVi: 'Đồng hồ cao cấp phiên bản vàng',
                 originalPrice: 89.99,
@@ -514,10 +516,10 @@ function searchAliExpressProduct() {
                 rating: 4.5,
                 reviews: 1247,
                 images: [
-                    'https://via.placeholder.com/400x400/ff6b35/ffffff?text=Watch+1',
-                    'https://via.placeholder.com/400x400/ff6b35/ffffff?text=Watch+2',
-                    'https://via.placeholder.com/400x400/ff6b35/ffffff?text=Watch+3',
-                    'https://via.placeholder.com/400x400/ff6b35/ffffff?text=Watch+4'
+                    'https://via.placeholder.com/600x600/eeeeee/333333?text=Image+1',
+                    'https://via.placeholder.com/600x600/eeeeee/333333?text=Image+2',
+                    'https://via.placeholder.com/600x600/eeeeee/333333?text=Image+3',
+                    'https://via.placeholder.com/600x600/eeeeee/333333?text=Image+4'
                 ],
                 specs: [
                     { label: 'Brand', value: 'Luxury Time' },
@@ -527,18 +529,17 @@ function searchAliExpressProduct() {
                     { label: 'Case Size', value: '42mm' },
                     { label: 'Warranty', value: '2 Years' }
                 ],
-                description: 'Premium luxury watch with elegant design and superior craftsmanship. Perfect for both casual and formal occasions.',
-                descriptionVi: 'Đồng hồ cao cấp với thiết kế thanh lịch và chất lượng vượt trội. Hoàn hảo cho cả dịp thường ngày và trang trọng.',
+                description: 'Premium luxury watch with elegant design and superior craftsmanship.',
+                descriptionVi: 'Đồng hồ cao cấp với thiết kế thanh lịch và chất lượng vượt trội.',
                 keywords: 'watch, luxury, gold, premium, stainless steel',
                 tags: 'bestseller, new, limited edition'
             };
+        }
 
-            currentProductData = mockProductData;
-            displayProductPreview(mockProductData);
-            fillImportForm(mockProductData);
-            updateApiStatus('success', 'Product data loaded successfully');
-        }, 2000);
-
+        currentProductData = data;
+        displayProductPreview(data);
+        fillImportForm(data);
+        updateApiStatus('success', 'Product data loaded successfully');
     } catch (error) {
         console.error('Error in searchAliExpressProduct:', error);
         updateApiStatus('error', 'Failed to fetch product data');
