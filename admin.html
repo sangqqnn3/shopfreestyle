@@ -184,6 +184,7 @@
             <button class="admin-tab" onclick="showTab('users')">Users</button>
             <button class="admin-tab" onclick="showTab('products')">Products</button>
             <button class="admin-tab" onclick="showTab('orders')">Orders</button>
+            <button class="admin-tab" onclick="showTab('aliexpress')">AliExpress Import</button>
         </div>
 
         <!-- Dashboard Tab -->
@@ -281,6 +282,74 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+
+        <!-- AliExpress Import Tab -->
+        <div id="aliexpress" class="admin-content">
+            <h2>Import Products from AliExpress</h2>
+            <div style="background: #fff3cd; padding: 1rem; border-radius: 5px; margin-bottom: 2rem; border-left: 4px solid #ffc107;">
+                <strong>⚠️ Note:</strong> This is a manual import. Enter AliExpress product details below to quickly add products to your store.
+            </div>
+
+            <div class="form-group">
+                <label>Search AliExpress Product URL:</label>
+                <input type="url" id="aliexpressUrl" placeholder="https://www.aliexpress.com/item/..." style="width: 70%; display: inline-block;">
+                <button class="btn btn-add" onclick="searchAliExpressProduct()" style="width: 28%; margin-left: 2%;">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+
+            <div id="aliexpressResults" style="margin-top: 2rem;"></div>
+
+            <hr style="margin: 2rem 0;">
+
+            <h3>Or Manually Add Product Details</h3>
+            <form onsubmit="importAliExpressProduct(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Name (English):</label>
+                        <input type="text" id="aliexpressNameEn" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Name (Vietnamese):</label>
+                        <input type="text" id="aliexpressNameVi" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Price (USD):</label>
+                        <input type="number" id="aliexpressPrice" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Stock:</label>
+                        <input type="number" id="aliexpressStock" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Category:</label>
+                    <select id="aliexpressCategory" required>
+                        <option value="women-watches">Women's Watches</option>
+                        <option value="men-watches">Men's Watches</option>
+                        <option value="jewelry">Jewelry</option>
+                        <option value="bags">Bags</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Image URL:</label>
+                    <input type="url" id="aliexpressImage" required>
+                </div>
+                <div class="form-group">
+                    <label>Description (English):</label>
+                    <textarea id="aliexpressDescEn" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Description (Vietnamese):</label>
+                    <textarea id="aliexpressDescVi" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-add" style="width: 100%;">
+                    <i class="fas fa-plus"></i> Import Product
+                </button>
+            </form>
         </div>
     </div>
 

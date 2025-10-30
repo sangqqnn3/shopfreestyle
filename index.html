@@ -37,14 +37,66 @@
     <!-- User Dropdown -->
     <div id="userDropdown" class="user-dropdown hidden">
         <div id="userMenu">
-            <a href="auth.html" data-i18n="login">Login</a>
-            <a href="auth.html?register=1" data-i18n="register">Register</a>
+            <a href="#" onclick="showLoginModal(event)" data-i18n="login">Login</a>
+            <a href="#" onclick="showRegisterModal(event)" data-i18n="register">Register</a>
         </div>
         <div id="loggedInMenu" class="hidden">
             <span id="userName"></span>
             <a href="payout.html" data-i18n="cart">Cart</a>
             <a href="#" id="logoutBtn" data-i18n="logout">Logout</a>
             <a href="admin.html" id="adminLink" class="hidden" data-i18n="admin">Admin</a>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close" onclick="closeLoginModal()">&times;</span>
+            <h2>Login</h2>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="loginEmailInput" required>
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="loginPasswordInput" required>
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+                <p style="text-align: center; margin-top: 1rem;">
+                    Don't have an account? <a href="#" onclick="showRegisterModal(event)" style="color: var(--primary-color);">Register</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close" onclick="closeRegisterModal()">&times;</span>
+            <h2>Register</h2>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Full Name:</label>
+                    <input type="text" id="registerNameInput" required>
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="registerEmailInput" required>
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="registerPasswordInput" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password:</label>
+                    <input type="password" id="registerPasswordConfirmInput" required>
+                </div>
+                <button type="submit" class="submit-btn">Register</button>
+                <p style="text-align: center; margin-top: 1rem;">
+                    Already have an account? <a href="#" onclick="showLoginModal(event)" style="color: var(--primary-color);">Login</a>
+                </p>
+            </form>
         </div>
     </div>
 

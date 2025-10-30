@@ -348,6 +348,76 @@ function closeSearch() {
     document.getElementById('searchModal').style.display = 'none';
 }
 
+// Login/Register Modals
+function showLoginModal(e) {
+    if (e) e.preventDefault();
+    document.getElementById('userDropdown').classList.add('hidden');
+    document.getElementById('loginModal').style.display = 'block';
+}
+
+function closeLoginModal() {
+    document.getElementById('loginModal').style.display = 'none';
+}
+
+function showRegisterModal(e) {
+    if (e) e.preventDefault();
+    document.getElementById('userDropdown').classList.add('hidden');
+    document.getElementById('registerModal').style.display = 'block';
+}
+
+function closeRegisterModal() {
+    document.getElementById('registerModal').style.display = 'none';
+}
+
+function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmailInput').value;
+    const password = document.getElementById('loginPasswordInput').value;
+
+    const result = auth.login(email, password);
+    if (result.success) {
+        alert('Login successful!');
+        closeLoginModal();
+        location.reload(); // Reload to update UI
+    } else {
+        alert(result.message);
+    }
+}
+
+function handleRegister(e) {
+    e.preventDefault();
+    const name = document.getElementById('registerNameInput').value;
+    const email = document.getElementById('registerEmailInput').value;
+    const password = document.getElementById('registerPasswordInput').value;
+    const passwordConfirm = document.getElementById('registerPasswordConfirmInput').value;
+
+    if (password !== passwordConfirm) {
+        alert('Passwords do not match!');
+        return;
+    }
+
+    const result = auth.register({ name, email, password });
+    if (result.success) {
+        alert('Registration successful!');
+        closeRegisterModal();
+        location.reload();
+    } else {
+        alert(result.message);
+    }
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const loginModal = document.getElementById('loginModal');
+    const registerModal = document.getElementById('registerModal');
+    if (event.target === loginModal) {
+        closeLoginModal();
+    }
+    if (event.target === registerModal) {
+        closeRegisterModal();
+    }
+}
+
 // Smooth scrolling
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {

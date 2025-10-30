@@ -1,5 +1,12 @@
 // Admin Panel Logic
 document.addEventListener('DOMContentLoaded', function() {
+    // Check if user is logged in
+    if (!auth.isLoggedIn()) {
+        alert('Please login first to access Admin Panel.');
+        window.location.href = 'index.html';
+        return;
+    }
+
     // Check if user is admin
     if (!auth.isAdmin()) {
         alert('Access denied. Admin privileges required.');
@@ -32,6 +39,8 @@ function showTab(tabName) {
         loadOrders();
     } else if (tabName === 'dashboard') {
         loadDashboard();
+    } else if (tabName === 'aliexpress') {
+        // AliExpress tab loaded
     }
 }
 
@@ -286,5 +295,74 @@ function updateOrderStatus(orderId) {
         loadOrders();
         loadDashboard();
     }
+}
+
+// AliExpress Integration
+function searchAliExpressProduct() {
+    const url = document.getElementById('aliexpressUrl').value;
+    if (!url) {
+        alert('Please enter AliExpress product URL');
+        return;
+    }
+
+    const results = document.getElementById('aliexpressResults');
+    results.innerHTML = `
+        <div style="background: #e7f3ff; padding: 1.5rem; border-radius: 5px; border-left: 4px solid #2196F3;">
+            <h3>Manual Import Required</h3>
+            <p>Please copy the product details from the AliExpress page and fill in the form below:</p>
+            <ol style="margin-top: 1rem;">
+                <li>Open the AliExpress product page in a new tab</li>
+                <li>Copy product name, images, and description</li>
+                <li>Fill in the form below with the information</li>
+                <li>Click "Import Product"</li>
+            </ol>
+            <button class="btn" onclick="window.open('${url}', '_blank')" style="margin-top: 1rem; background: #2196F3; color: white;">
+                <i class="fas fa-external-link-alt"></i> Open AliExpress Page
+            </button>
+        </div>
+    `;
+}
+
+function importAliExpressProduct(e) {
+    e.preventDefault();
+    
+    const productData = {
+        nameEn: document.getElementById('aliexpressNameEn').value,
+        name: document.getElementById('aliexpressNameVi').value,
+        price: parseFloat(document.getElementById('aliexpressPrice').value),
+        stock: parseInt(document.getElementById('aliexpressStock').value),
+        category: document.getElementById('aliexpressCategory').value,
+        image: document.getElementById('aliexpressImage').value,
+        descriptionEn: document.getElementById('aliexpressDescEn').value,
+        description: document.getElementById('aliexpressDescVi').value
+    };
+
+    try {
+        db.addProduct(productData);
+        alert('Product imported successfully!');
+        
+        // Clear form
+        document.getElementById('aliexpressUrl').value = '';
+        document.querySelector('#aliexpress form').reset();
+        
+        // Reload products and dashboard
+        loadProducts();
+        loadDashboard();
+        
+        // Switch to Products tab
+        document.querySelectorAll('.admin-tab')[2].click();
+    } catch (error) {
+        alert('Error importing product: ' + error.message);
+    }
+}
+
+// Auto-fill form helper (for manual use)
+function autoFillProductForm(nameEn, nameVi, price, image, category) {
+    document.getElementById('aliexpressNameEn').value = nameEn || '';
+    document.getElementById('aliexpressNameVi').value = nameVi || '';
+    document.getElementById('aliexpressPrice').value = price || '';
+    document.getElementById('aliexpressImage').value = image || '';
+    document.getElementById('aliexpressCategory').value = category || 'women-watches';
+    document.getElementById('aliexpressStock').value = 50;
 }
 
