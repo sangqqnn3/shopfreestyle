@@ -20,17 +20,36 @@ class AliExpressAPI {
         // Try backend API first if configured
         if (this.enabled && this.apiBase) {
             try {
-                const resp = await fetch(`${this.apiBase}/product`, {
+                // Construct full URL - apiBase should already include /api/aliexpress if using full URL
+                // or just the base URL, we'll append the endpoint
+                const apiUrl = this.apiBase.endsWith('/') 
+                    ? `${this.apiBase}product` 
+                    : `${this.apiBase}/product`;
+                
+                console.log('Calling backend API:', apiUrl);
+                const resp = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ url: productUrl })
                 });
-                if (resp.ok) {
-                    const data = await resp.json();
-                    return this.normalizeProduct(data);
+                
+                if (!resp.ok) {
+                    throw new Error(`API returned ${resp.status}: ${resp.statusText}`);
+                }
+                
+                const result = await resp.json();
+                console.log('API Response:', result);
+                
+                if (result.success && result.data) {
+                    return this.normalizeProduct(result.data);
+                } else if (result.error) {
+                    throw new Error(result.error);
+                } else {
+                    throw new Error('Invalid API response format');
                 }
             } catch (error) {
-                console.warn('Backend API failed, trying direct fetch:', error);
+                console.error('Backend API failed:', error);
+                throw error; // Re-throw to prevent fallback if API is configured
             }
         }
 

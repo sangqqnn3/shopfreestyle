@@ -559,15 +559,23 @@
     <script src="js/auth.js"></script>
     <script>
         // Configure AliExpress API
-        // Option 1: Use backend API proxy (recommended)
-        // window.aliConfig = { apiBase: '/api/aliexpress' };
+        // Option 1: Use backend API proxy on Render (recommended)
+        // Replace YOUR_API_URL with your Render service URL
+        // Example: https://aliexpress-api-elxt.onrender.com
         
-        // Option 2: Use direct fetching with CORS proxy (fallback, works without backend)
+        // Uncomment and set your Render API URL below:
         window.aliConfig = { 
-            apiBase: '', // Leave empty to use direct fetching
-            useCorsProxy: true,
-            corsProxy: 'https://api.allorigins.win/get?url=' // CORS proxy service
+            apiBase: 'https://aliexpress-api-elxt.onrender.com/api/aliexpress', // Your Render API URL
+            useCorsProxy: false, // Disable CORS proxy when using backend API
+            corsProxy: 'https://api.allorigins.win/get?url=' // CORS proxy service (fallback only)
         };
+        
+        // If you want to use direct fetching instead (without backend), comment above and use:
+        // window.aliConfig = { 
+        //     apiBase: '',
+        //     useCorsProxy: true,
+        //     corsProxy: 'https://api.allorigins.win/get?url='
+        // };
     </script>
     <script src="js/aliexpress.js"></script>
     <script src="js/admin.js"></script>
