@@ -491,59 +491,102 @@ function copyAliExpressInfo(orderId) {
 // AliExpress Integration
 let currentProductData = null;
 
+// Helper function to validate AliExpress URL
+function isValidAliExpressUrl(url) {
+    if (!url || typeof url !== 'string') return false;
+    
+    // Clean the URL
+    url = url.trim();
+    
+    // Check if it's a valid AliExpress URL pattern
+    const aliExpressPatterns = [
+        /^https?:\/\/(www\.)?aliexpress\.(com|ru|es|fr|it|de|nl|pt|pl|tr|co\.jp|co\.uk)\/item\/[^\/]+\.html/,
+        /^https?:\/\/[a-z]{2}\.aliexpress\.com\/item\/[^\/]+\.html/,
+        /^https?:\/\/(www\.)?aliexpress\.(com|ru|es|fr|it|de|nl|pt|pl|tr|co\.jp|co\.uk)\/store\/product\/[^\/]+\.html/
+    ];
+    
+    return aliExpressPatterns.some(pattern => pattern.test(url));
+}
+
+// Helper function to extract product ID from URL
+function extractProductIdFromUrl(url) {
+    if (!url) return null;
+    
+    // Try to extract product ID from URL patterns
+    const match = url.match(/\/(\d+)\.html/);
+    if (match) return match[1];
+    
+    // Alternative pattern
+    const match2 = url.match(/\/item\/[^\/]*-(\d+)\.html/);
+    if (match2) return match2[1];
+    
+    return null;
+}
+
 async function searchAliExpressProduct() {
     try {
-        const url = document.getElementById('aliexpressUrl').value;
+        const urlInput = document.getElementById('aliexpressUrl');
+        const url = urlInput.value.trim();
+        
         if (!url) {
-            alert('Please enter AliExpress product URL');
+            alert('Vui lòng nhập URL sản phẩm AliExpress');
+            updateApiStatus('error', 'Chưa nhập URL');
             return;
         }
 
-        updateApiStatus('loading', 'Fetching product data...');
+        // Validate URL format
+        if (!isValidAliExpressUrl(url)) {
+            alert('URL không hợp lệ! Vui lòng nhập URL AliExpress đúng định dạng.\n\nVí dụ: https://www.aliexpress.com/item/1234567890.html');
+            updateApiStatus('error', 'URL không hợp lệ');
+            return;
+        }
 
+        updateApiStatus('loading', 'Đang tải dữ liệu sản phẩm...');
+
+        // Always try to fetch real data from URL (with or without backend API)
         let data;
-        if (window.aliExpressAPI && window.aliExpressAPI.enabled) {
-            // Use real proxy-backed API if configured
+        try {
+            // fetchProductByUrl will try backend API first, then fallback to direct fetching
             data = await window.aliExpressAPI.fetchProductByUrl(url);
-        } else {
-            // Fallback: mock data for demo
-            data = {
-                title: 'Premium Luxury Watch - Gold Edition',
-                titleVi: 'Đồng hồ cao cấp phiên bản vàng',
-                originalPrice: 89.99,
-                salePrice: 59.99,
-                discount: 33,
-                rating: 4.5,
-                reviews: 1247,
-                images: [
-                    'https://via.placeholder.com/600x600/eeeeee/333333?text=Image+1',
-                    'https://via.placeholder.com/600x600/eeeeee/333333?text=Image+2',
-                    'https://via.placeholder.com/600x600/eeeeee/333333?text=Image+3',
-                    'https://via.placeholder.com/600x600/eeeeee/333333?text=Image+4'
-                ],
-                specs: [
-                    { label: 'Brand', value: 'Luxury Time' },
-                    { label: 'Material', value: 'Stainless Steel' },
-                    { label: 'Movement', value: 'Quartz' },
-                    { label: 'Water Resistance', value: '50m' },
-                    { label: 'Case Size', value: '42mm' },
-                    { label: 'Warranty', value: '2 Years' }
-                ],
-                description: 'Premium luxury watch with elegant design and superior craftsmanship.',
-                descriptionVi: 'Đồng hồ cao cấp với thiết kế thanh lịch và chất lượng vượt trội.',
-                keywords: 'watch, luxury, gold, premium, stainless steel',
-                tags: 'bestseller, new, limited edition'
-            };
+        } catch (apiError) {
+            console.error('Fetch Error:', apiError);
+            updateApiStatus('error', 'Không thể tải dữ liệu sản phẩm');
+            
+            const productId = extractProductIdFromUrl(url);
+            const errorMessage = apiError.message || 'Unknown error';
+            
+            const message = `Không thể tải dữ liệu từ URL này.\n\n` +
+                (productId ? `Product ID: ${productId}\n\n` : '') +
+                `Lỗi: ${errorMessage}\n\n` +
+                `Vui lòng:\n` +
+                `- Kiểm tra lại URL có đúng không\n` +
+                `- Thử lại sau vài giây\n` +
+                `- Hoặc cấu hình API backend để tải dữ liệu tốt hơn`;
+            
+            alert(message);
+            
+            // Clear any previous preview
+            document.getElementById('productPreview')?.classList.add('hidden');
+            return;
+        }
+
+        if (!data) {
+            updateApiStatus('error', 'Không tìm thấy dữ liệu sản phẩm');
+            alert('Không thể lấy dữ liệu từ URL này. Vui lòng kiểm tra lại URL hoặc thử lại sau.');
+            return;
         }
 
         currentProductData = data;
         displayProductPreview(data);
         fillImportForm(data);
-        updateApiStatus('success', 'Product data loaded successfully');
+        updateApiStatus('success', 'Đã tải dữ liệu sản phẩm thành công');
     } catch (error) {
         console.error('Error in searchAliExpressProduct:', error);
-        updateApiStatus('error', 'Failed to fetch product data');
-        alert('Error: ' + error.message);
+        updateApiStatus('error', 'Lỗi khi tải dữ liệu');
+        alert('Lỗi: ' + error.message);
+        
+        // Clear preview on error
+        document.getElementById('productPreview')?.classList.add('hidden');
     }
 }
 
@@ -904,6 +947,17 @@ function showTab(tabName) {
         loadDashboard();
     } else if (tabName === 'aliexpress') {
         loadImportHistory();
+        // Check API status when tab is opened
+        checkApiStatus();
+    }
+}
+
+// Check API configuration status
+function checkApiStatus() {
+    if (window.aliExpressAPI && window.aliExpressAPI.enabled) {
+        updateApiStatus('success', 'API đã được cấu hình và sẵn sàng');
+    } else {
+        updateApiStatus('error', 'API backend chưa được cấu hình');
     }
 }
 
