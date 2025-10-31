@@ -251,17 +251,24 @@ class AliExpressAPI {
     extractProductId(url) {
         if (!url) return null;
         
-        // Pattern 1: /item/.../1234567890.html
-        const match1 = url.match(/\/item\/[^\/]*-(\d+)\.html/);
+        // Remove query parameters for extraction
+        const cleanUrl = url.split('?')[0];
+        
+        // Pattern 1: /item/product-name-1234567890.html or /item/1234567890.html
+        const match1 = cleanUrl.match(/\/item\/[^\/]*?(\d+)\.html/);
         if (match1) return match1[1];
         
-        // Pattern 2: /item/1234567890.html
-        const match2 = url.match(/\/(\d+)\.html/);
+        // Pattern 2: Direct number before .html (fallback)
+        const match2 = cleanUrl.match(/\/(\d+)\.html/);
         if (match2) return match2[1];
         
         // Pattern 3: item-ajax/1234567890
-        const match3 = url.match(/item-ajax\/(\d+)/);
+        const match3 = cleanUrl.match(/item-ajax\/(\d+)/);
         if (match3) return match3[1];
+        
+        // Pattern 4: Store product format
+        const match4 = cleanUrl.match(/\/store\/product\/[^\/]*?(\d+)\.html/);
+        if (match4) return match4[1];
         
         return null;
     }

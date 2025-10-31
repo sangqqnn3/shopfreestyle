@@ -476,10 +476,14 @@ function isValidAliExpressUrl(url) {
     url = url.trim();
     
     // Check if it's a valid AliExpress URL pattern
+    // Support URLs with or without query parameters
     const aliExpressPatterns = [
-        /^https?:\/\/(www\.)?aliexpress\.(com|ru|es|fr|it|de|nl|pt|pl|tr|co\.jp|co\.uk)\/item\/[^\/]+\.html/,
-        /^https?:\/\/[a-z]{2}\.aliexpress\.com\/item\/[^\/]+\.html/,
-        /^https?:\/\/(www\.)?aliexpress\.(com|ru|es|fr|it|de|nl|pt|pl|tr|co\.jp|co\.uk)\/store\/product\/[^\/]+\.html/
+        // Standard item URL with optional query parameters
+        /^https?:\/\/(www\.)?aliexpress\.(com|ru|es|fr|it|de|nl|pt|pl|tr|co\.jp|co\.uk)\/item\/[^\/\s]+\.html(\?[^\s]*)?$/,
+        // Regional domains (e.g., aliexpress.com without www)
+        /^https?:\/\/[a-z]{2}\.?aliexpress\.(com|ru|es|fr|it|de|nl|pt|pl|tr|co\.jp|co\.uk)\/item\/[^\/\s]+\.html(\?[^\s]*)?$/,
+        // Store product URL with optional query parameters
+        /^https?:\/\/(www\.)?aliexpress\.(com|ru|es|fr|it|de|nl|pt|pl|tr|co\.jp|co\.uk)\/store\/product\/[^\/\s]+\.html(\?[^\s]*)?$/
     ];
     
     return aliExpressPatterns.some(pattern => pattern.test(url));
@@ -489,13 +493,20 @@ function isValidAliExpressUrl(url) {
 function extractProductIdFromUrl(url) {
     if (!url) return null;
     
-    // Try to extract product ID from URL patterns
-    const match = url.match(/\/(\d+)\.html/);
-    if (match) return match[1];
+    // Remove query parameters for extraction
+    const cleanUrl = url.split('?')[0];
     
-    // Alternative pattern
-    const match2 = url.match(/\/item\/[^\/]*-(\d+)\.html/);
+    // Pattern 1: /item/1234567890.html or /item/product-name-1234567890.html
+    const match1 = cleanUrl.match(/\/item\/[^\/]*?(\d+)\.html/);
+    if (match1) return match1[1];
+    
+    // Pattern 2: Direct number before .html
+    const match2 = cleanUrl.match(/\/(\d+)\.html/);
     if (match2) return match2[1];
+    
+    // Pattern 3: Store product format
+    const match3 = cleanUrl.match(/\/store\/product\/[^\/]*?(\d+)\.html/);
+    if (match3) return match3[1];
     
     return null;
 }
