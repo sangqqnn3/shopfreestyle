@@ -51,29 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 100);
 });
 
-function showTab(tabName) {
-    // Hide all tabs
-    document.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.admin-content').forEach(content => content.classList.remove('active'));
-
-    // Show selected tab
-    event.target.classList.add('active');
-    document.getElementById(tabName).classList.add('active');
-
-    // Reload data based on tab
-    if (tabName === 'users') {
-        loadUsers();
-    } else if (tabName === 'products') {
-        loadProducts();
-    } else if (tabName === 'orders') {
-        loadOrders();
-    } else if (tabName === 'dashboard') {
-        loadDashboard();
-    } else if (tabName === 'aliexpress') {
-        // AliExpress tab loaded
-    }
-}
-
 // Dashboard
 function loadDashboard() {
     const users = db.getUsers();
@@ -927,14 +904,33 @@ function deleteHistoryItem(timestamp) {
 }
 
 // Initialize import history when tab is loaded
-function showTab(tabName) {
+function showTab(tabName, eventElement) {
     // Hide all tabs
     document.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.admin-content').forEach(content => content.classList.remove('active'));
 
     // Show selected tab
-    event.target.classList.add('active');
-    document.getElementById(tabName).classList.add('active');
+    // Try to find the button element if eventElement not provided
+    let targetButton = eventElement;
+    if (!targetButton) {
+        // Find button by text content matching tab name
+        document.querySelectorAll('.admin-tab').forEach(btn => {
+            if (btn.textContent.trim().toLowerCase().includes(tabName.toLowerCase()) || 
+                btn.getAttribute('onclick')?.includes(`'${tabName}'`) ||
+                btn.getAttribute('onclick')?.includes(`"${tabName}"`)) {
+                targetButton = btn;
+            }
+        });
+    }
+    
+    if (targetButton && targetButton.classList) {
+        targetButton.classList.add('active');
+    }
+    
+    const contentElement = document.getElementById(tabName);
+    if (contentElement) {
+        contentElement.classList.add('active');
+    }
 
     // Reload data based on tab
     if (tabName === 'users') {
