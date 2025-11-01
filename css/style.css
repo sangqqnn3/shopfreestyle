@@ -387,7 +387,7 @@ body {
 
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
 }
 
@@ -401,13 +401,13 @@ body {
     transform: translateY(-2px);
 }
 
-.category-product-card .product-image {
+.product-image {
     width: 100%;
     height: 280px;
     object-fit: cover;
 }
 
-.category-product-card .product-info {
+.product-info {
     padding: 1rem;
 }
 
@@ -425,7 +425,7 @@ body {
     margin-bottom: 0.5rem;
 }
 
-.category-product-card .product-button {
+.product-button {
     background: #333;
     color: white;
     border: none;
@@ -438,7 +438,7 @@ body {
     font-size: 0.85rem;
 }
 
-.category-product-card .product-button:hover {
+.product-button:hover {
     background: #555;
 }
 
@@ -1447,6 +1447,26 @@ body {
 }
 
 /* Responsive Design */
+@media (max-width: 992px) {
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .category-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .filters-sidebar {
+        position: static;
+        margin-bottom: 2rem;
+    }
+    
+    .category-content .products-container.grid-view {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
 @media (max-width: 768px) {
     .preview-container {
         grid-template-columns: 1fr;
@@ -1462,20 +1482,6 @@ body {
     
     .form-actions {
         flex-direction: column;
-    }
-    
-    .category-layout {
-        grid-template-columns: 1fr;
-    }
-    
-    .filters-sidebar {
-        position: static;
-        margin-bottom: 2rem;
-    }
-    
-    .products-container.grid-view {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
     }
     
     .product-card-list {
@@ -1497,6 +1503,10 @@ body {
         width: 100%;
     }
     
+    .product-image {
+        height: 200px;
+    }
+    
     .category-product-card .product-image {
         height: 200px;
     }
@@ -1504,10 +1514,18 @@ body {
     .container {
         padding: 0 0.5rem;
     }
+    
+    .products {
+        padding: 3rem 1rem;
+    }
 }
 
 @media (max-width: 480px) {
-    .products-container.grid-view {
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .category-content .products-container.grid-view {
         grid-template-columns: 1fr;
     }
 }
