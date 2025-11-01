@@ -60,34 +60,28 @@ function loadCategories() {
     
     const categories = [
         {
-            id: 'women-watches',
-            name: lang === 'en' ? 'Women\'s Watches' : 'Đồng hồ nữ',
+            id: 'watches',
+            name: lang === 'en' ? 'Watches' : 'Đồng hồ',
             image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-            price: 89.95
-        },
-        {
-            id: 'men-watches',
-            name: lang === 'en' ? 'Men\'s Watches' : 'Đồng hồ nam',
-            image: 'https://images.unsplash.com/photo-1523170335258-f5b6c6a4450b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-            price: 109.95
+            link: 'watches.html'
         },
         {
             id: 'jewelry',
             name: lang === 'en' ? 'Jewelry' : 'Trang sức',
             image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-            price: 39.95
+            link: 'jewelry.html'
         },
         {
             id: 'bags',
             name: lang === 'en' ? 'Bags' : 'Túi xách',
             image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-            price: 99.95
+            link: 'bags.html'
         }
     ];
     
     if (categoriesGrid) {
         categoriesGrid.innerHTML = categories.map(cat => `
-            <div class="category-card" onclick="initiatePayment('${cat.id}', ${cat.price})">
+            <div class="category-card" onclick="window.location.href='${cat.link}'">
                 <div class="category-image" style="background-image: url('${cat.image}')"></div>
                 <div class="category-overlay">
                     <h3 class="category-title">${cat.name}</h3>
