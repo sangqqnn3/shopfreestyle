@@ -387,26 +387,146 @@ function viewOrderDetails(orderId) {
     const customer = order.customer;
     const items = order.items || [];
     
-    let details = `Order ID: ${order.id}\n`;
-    details += `Status: ${order.status || 'pending'}\n`;
-    details += `Total: $${(order.total || order.amount || 0).toFixed(2)}\n`;
-    details += `Created: ${new Date(order.createdAt || order.date).toLocaleString()}\n\n`;
+    // Display in modal
+    const modal = document.getElementById('orderDetailsModal');
+    const title = document.getElementById('orderDetailsTitle');
+    const content = document.getElementById('orderDetailsContent');
     
+    title.textContent = `Order ${order.id}`;
+    
+    // Build HTML content
+    let html = '';
+    
+    // Order Info Section
+    html += `
+        <div class="order-detail-section">
+            <h4><i class="fas fa-info-circle"></i> Order Information</h4>
+            <div class="detail-item">
+                <div class="detail-label">Order ID:</div>
+                <div class="detail-value" id="orderIdValue">${order.id}</div>
+                <button class="detail-copy-btn" onclick="copyToClipboard('orderIdValue', this)">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Status:</div>
+                <div class="detail-value">${order.status || 'pending'}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Total Amount:</div>
+                <div class="detail-value">$${(order.total || order.amount || 0).toFixed(2)}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Payment Method:</div>
+                <div class="detail-value">${order.paymentMethod || 'N/A'}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Order Date:</div>
+                <div class="detail-value">${new Date(order.createdAt || order.date).toLocaleString()}</div>
+            </div>
+        </div>
+    `;
+    
+    // Customer Information Section
     if (customer) {
-        details += `Customer Information:\n`;
-        details += `Name: ${customer.name}\n`;
-        details += `Phone: ${customer.phone}\n`;
-        details += `Email: ${customer.email}\n`;
-        details += `Address: ${customer.fullAddress || 'N/A'}\n`;
-        details += `Payment Method: ${order.paymentMethod || 'N/A'}\n\n`;
+        html += `
+            <div class="order-detail-section">
+                <h4><i class="fas fa-user"></i> Customer Information</h4>
+                <div class="detail-item">
+                    <div class="detail-label">Full Name:</div>
+                    <div class="detail-value" id="customerNameValue">${customer.name || 'N/A'}</div>
+                    <button class="detail-copy-btn" onclick="copyToClipboard('customerNameValue', this)">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Phone Number:</div>
+                    <div class="detail-value" id="customerPhoneValue">${customer.phone || 'N/A'}</div>
+                    <button class="detail-copy-btn" onclick="copyToClipboard('customerPhoneValue', this)">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Email:</div>
+                    <div class="detail-value" id="customerEmailValue">${customer.email || 'N/A'}</div>
+                    <button class="detail-copy-btn" onclick="copyToClipboard('customerEmailValue', this)">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Full Address:</div>
+                    <div class="detail-value" id="customerAddressValue" style="white-space: pre-wrap;">${customer.fullAddress || 'N/A'}</div>
+                    <button class="detail-copy-btn" onclick="copyToClipboard('customerAddressValue', this)">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                ${customer.city ? `<div class="detail-item">
+                    <div class="detail-label">City:</div>
+                    <div class="detail-value">${customer.city}</div>
+                </div>` : ''}
+                ${customer.district ? `<div class="detail-item">
+                    <div class="detail-label">District:</div>
+                    <div class="detail-value">${customer.district}</div>
+                </div>` : ''}
+                ${customer.ward ? `<div class="detail-item">
+                    <div class="detail-label">Ward:</div>
+                    <div class="detail-value">${customer.ward}</div>
+                </div>` : ''}
+                ${customer.street ? `<div class="detail-item">
+                    <div class="detail-label">Street:</div>
+                    <div class="detail-value">${customer.street}</div>
+                </div>` : ''}
+                ${customer.note ? `<div class="detail-item">
+                    <div class="detail-label">Delivery Note:</div>
+                    <div class="detail-value">${customer.note}</div>
+                </div>` : ''}
+            </div>
+        `;
     }
     
-    details += `Items:\n`;
-    items.forEach((item, index) => {
-        details += `${index + 1}. ${item.name} (x${item.quantity || 1}) - $${item.price.toFixed(2)}\n`;
-    });
+    // Items Section
+    if (items && items.length > 0) {
+        html += `
+            <div class="order-detail-section">
+                <h4><i class="fas fa-shopping-cart"></i> Order Items</h4>
+                <table class="order-items-table">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Product Name</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        items.forEach((item, index) => {
+            const product = db.getProductById(item.productId) || { image: item.image || '' };
+            html += `
+                <tr>
+                    <td><img src="${product.image || item.image || ''}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60'"></td>
+                    <td>${item.name}</td>
+                    <td>${item.quantity || 1}</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td>$${((item.quantity || 1) * item.price).toFixed(2)}</td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
     
-    alert(details);
+    content.innerHTML = html;
+    modal.classList.add('active');
+    
+    // Store current order ID for copy all function
+    window.currentOrderId = orderId;
 }
 
 function copyAliExpressInfo(orderId) {
@@ -463,6 +583,60 @@ function copyAliExpressInfo(orderId) {
         document.body.removeChild(textArea);
         alert('AliExpress order information copied to clipboard!\n\nYou can now paste this information when creating the order on AliExpress.');
     });
+}
+
+// Close order details modal
+function closeOrderDetails() {
+    const modal = document.getElementById('orderDetailsModal');
+    modal.classList.remove('active');
+    window.currentOrderId = null;
+}
+
+// Copy individual field to clipboard
+function copyToClipboard(elementId, button) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    
+    const text = element.textContent.trim();
+    
+    navigator.clipboard.writeText(text).then(() => {
+        // Show feedback
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        button.style.background = '#27ae60';
+        
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.style.background = '';
+        }, 2000);
+    }).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        button.style.background = '#27ae60';
+        
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.style.background = '';
+        }, 2000);
+    });
+}
+
+// Copy all order information
+function copyAllOrderInfo() {
+    if (!window.currentOrderId) {
+        alert('No order selected');
+        return;
+    }
+    
+    copyAliExpressInfo(window.currentOrderId);
 }
 
 // AliExpress Integration

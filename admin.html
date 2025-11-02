@@ -228,6 +228,121 @@
             font-weight: bold;
         }
 
+        /* Order Details Modal */
+        .order-details-modal {
+            max-width: 900px;
+            width: 95%;
+        }
+
+        .order-detail-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .order-detail-section h4 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-bottom: 2px solid #333;
+            padding-bottom: 0.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            width: 150px;
+            flex-shrink: 0;
+            color: #666;
+        }
+
+        .detail-value {
+            flex: 1;
+            color: #333;
+        }
+
+        .detail-copy-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
+            transition: background 0.3s;
+        }
+
+        .detail-copy-btn:hover {
+            background: #555;
+        }
+
+        .copy-all-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+
+        .copy-all-btn:hover {
+            background: #229954;
+        }
+
+        .copy-all-btn i {
+            margin-right: 0.5rem;
+        }
+
+        .order-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .order-items-table th,
+        .order-items-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .order-items-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .order-items-table img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .copy-status {
+            display: inline-block;
+            margin-left: 0.5rem;
+            color: #27ae60;
+            font-size: 0.9rem;
+        }
+
+        .copy-status.hidden {
+            display: none;
+        }
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -661,7 +776,7 @@
     </div>
 
     <!-- User Form Modal -->
-    <div id="userForm" class="modal-form">
+    <div id="userForm" class="modal-form" onclick="if(event.target.id === 'userForm') closeUserForm()">
         <div class="modal-content">
             <h2 id="userFormTitle">Add User</h2>
             <form onsubmit="saveUser(event)">
@@ -694,7 +809,7 @@
     </div>
 
     <!-- Product Form Modal -->
-    <div id="productForm" class="modal-form">
+    <div id="productForm" class="modal-form" onclick="if(event.target.id === 'productForm') closeProductForm()">
         <div class="modal-content">
             <h2 id="productFormTitle">Add Product</h2>
             <form onsubmit="saveProduct(event)">
@@ -910,7 +1025,7 @@
     </div>
 
     <!-- Coupon Form Modal -->
-    <div id="couponForm" class="modal-form">
+    <div id="couponForm" class="modal-form" onclick="if(event.target.id === 'couponForm') closeCouponForm()">
         <div class="modal-content" style="max-width: 600px;">
             <h2 id="couponFormTitle">Add Coupon</h2>
             <form onsubmit="saveCoupon(event)">
@@ -953,6 +1068,22 @@
                     <button type="button" class="btn" onclick="closeCouponForm()" style="flex: 1;">Cancel</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="orderDetailsModal" class="modal-form" onclick="if(event.target.id === 'orderDetailsModal') closeOrderDetails()">
+        <div class="modal-content order-details-modal">
+            <h2 id="orderDetailsTitle">Order Details</h2>
+            <div id="orderDetailsContent">
+                <!-- Order details loaded here -->
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button class="copy-all-btn" onclick="copyAllOrderInfo()">
+                    <i class="fas fa-copy"></i> Copy All Information
+                </button>
+                <button class="btn" onclick="closeOrderDetails()" style="flex: 1;">Close</button>
+            </div>
         </div>
     </div>
 
