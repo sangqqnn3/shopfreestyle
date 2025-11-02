@@ -1075,6 +1075,12 @@ body {
     padding: 0 1rem;
 }
 
+.container-product-detail {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
 .category-layout {
     display: grid;
     grid-template-columns: 240px 1fr;
