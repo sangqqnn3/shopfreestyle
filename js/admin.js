@@ -968,3 +968,359 @@ function checkApiStatus() {
     }
 }
 
+// ===== NEW PRODUCT MANAGEMENT FUNCTIONS =====
+
+// Global variables for product form
+let productColors = [];
+let productGalleryImages = [];
+let productTags = [];
+
+// Add color to product
+function addColor() {
+    const colorInput = document.getElementById('productColorInput');
+    const color = colorInput.value.trim();
+    
+    if (!color) return;
+    
+    if (!productColors.includes(color)) {
+        productColors.push(color);
+        renderColorsList();
+        colorInput.value = '';
+    }
+}
+
+// Render colors list
+function renderColorsList() {
+    const container = document.getElementById('colorsList');
+    container.innerHTML = productColors.map((color, index) => `
+        <span class="tag">
+            <span class="color-preview" style="background: ${color};"></span>
+            ${color}
+            <span class="remove-tag" onclick="removeColor(${index})">×</span>
+        </span>
+    `).join('');
+}
+
+// Remove color
+function removeColor(index) {
+    productColors.splice(index, 1);
+    renderColorsList();
+}
+
+// Add gallery image
+function addGalleryImage() {
+    const input = document.getElementById('galleryImageInput');
+    const url = input.value.trim();
+    
+    if (!url) return;
+    
+    if (!productGalleryImages.includes(url)) {
+        productGalleryImages.push(url);
+        renderGalleryImages();
+        input.value = '';
+    }
+}
+
+// Render gallery images
+function renderGalleryImages() {
+    const container = document.getElementById('galleryImages');
+    container.innerHTML = productGalleryImages.map((url, index) => `
+        <div class="gallery-item">
+            <img src="${url}" alt="Gallery ${index + 1}">
+            <button class="remove-btn" onclick="removeGalleryImage(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `).join('');
+    
+    // Add "add image" button at the end
+    container.innerHTML += `
+        <div class="add-image-btn" onclick="document.getElementById('galleryImageInput').focus()">
+            <i class="fas fa-plus" style="font-size: 2rem; color: #666;"></i>
+            <div style="margin-top: 0.5rem; color: #666;">Add Image</div>
+        </div>
+    `;
+}
+
+// Remove gallery image
+function removeGalleryImage(index) {
+    productGalleryImages.splice(index, 1);
+    renderGalleryImages();
+}
+
+// Toggle shipping fee
+function toggleShippingFee() {
+    const isFreeShip = document.getElementById('productFreeShip').checked;
+    const feeGroup = document.getElementById('shippingFeeGroup');
+    
+    if (isFreeShip) {
+        feeGroup.style.display = 'none';
+    } else {
+        feeGroup.style.display = 'block';
+    }
+}
+
+// Update product form with all new fields
+function updateShowProductForm() {
+    const originalShow = window.showProductForm;
+    
+    window.showProductForm = function(productId = null) {
+        const form = document.getElementById('productForm');
+        const title = document.getElementById('productFormTitle');
+        
+        // Reset arrays
+        productColors = [];
+        productGalleryImages = [];
+        productTags = [];
+        
+        if (productId) {
+            const product = db.getProductById(productId);
+            title.textContent = 'Edit Product';
+            document.getElementById('productId').value = productId;
+            document.getElementById('productSKU').value = product.sku || '';
+            document.getElementById('productNameEn').value = product.nameEn || '';
+            document.getElementById('productNameVi').value = product.name || '';
+            document.getElementById('productPrice').value = product.price || '';
+            document.getElementById('productOriginalPrice').value = product.originalPrice || '';
+            document.getElementById('productStock').value = product.stock || '';
+            document.getElementById('productWeight').value = product.weight || '';
+            document.getElementById('productCategory').value = product.category || '';
+            document.getElementById('productImage').value = product.image || '';
+            document.getElementById('productDescEn').value = product.descriptionEn || '';
+            document.getElementById('productDescVi').value = product.description || '';
+            document.getElementById('productFreeShip').checked = product.freeShipping || false;
+            document.getElementById('productShippingFee').value = product.shippingFee || 0;
+            document.getElementById('productDeliveryDays').value = product.deliveryDays || 5;
+            document.getElementById('productIsNew').checked = product.isNew || false;
+            document.getElementById('productIsHot').checked = product.isHot || false;
+            document.getElementById('productCouponCode').value = product.couponCode || '';
+            document.getElementById('productSizes').value = product.sizes || '';
+            document.getElementById('productKeywords').value = product.keywords || '';
+            
+            // Load arrays
+            productColors = product.colors || [];
+            productGalleryImages = product.galleryImages || [];
+            productTags = product.tags || [];
+            
+            // Render
+            renderColorsList();
+            renderGalleryImages();
+            toggleShippingFee();
+            loadCouponsToSelect();
+        } else {
+            title.textContent = 'Add Product';
+            document.getElementById('productId').value = '';
+            document.getElementById('productSKU').value = generateSKU();
+            document.getElementById('productForm').querySelector('form').reset();
+            
+            // Reset arrays
+            productColors = [];
+            productGalleryImages = [];
+            productTags = [];
+            renderColorsList();
+            renderGalleryImages();
+            toggleShippingFee();
+            loadCouponsToSelect();
+        }
+        
+        form.classList.add('active');
+    };
+}
+
+// Generate SKU
+function generateSKU() {
+    return 'SKU-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substr(2, 5).toUpperCase();
+}
+
+// Update save product function
+function updateSaveProduct() {
+    window.saveProduct = function(e) {
+        e.preventDefault();
+        const productId = document.getElementById('productId').value;
+        
+        const productData = {
+            sku: document.getElementById('productSKU').value,
+            nameEn: document.getElementById('productNameEn').value,
+            name: document.getElementById('productNameVi').value,
+            price: parseFloat(document.getElementById('productPrice').value),
+            originalPrice: parseFloat(document.getElementById('productOriginalPrice').value) || null,
+            stock: parseInt(document.getElementById('productStock').value),
+            weight: parseFloat(document.getElementById('productWeight').value) || 0,
+            category: document.getElementById('productCategory').value,
+            image: document.getElementById('productImage').value,
+            galleryImages: productGalleryImages,
+            descriptionEn: document.getElementById('productDescEn').value,
+            description: document.getElementById('productDescVi').value,
+            freeShipping: document.getElementById('productFreeShip').checked,
+            shippingFee: parseFloat(document.getElementById('productShippingFee').value) || 0,
+            deliveryDays: parseInt(document.getElementById('productDeliveryDays').value) || 5,
+            isNew: document.getElementById('productIsNew').checked,
+            isHot: document.getElementById('productIsHot').checked,
+            couponCode: document.getElementById('productCouponCode').value || null,
+            colors: productColors,
+            sizes: document.getElementById('productSizes').value,
+            keywords: document.getElementById('productKeywords').value,
+            tags: productTags
+        };
+        
+        if (productId) {
+            db.updateProduct(productId, productData);
+            alert('Product updated successfully!');
+        } else {
+            db.addProduct(productData);
+            alert('Product added successfully!');
+        }
+        
+        closeProductForm();
+        loadProducts();
+        loadDashboard();
+    };
+}
+
+// ===== COUPONS MANAGEMENT =====
+
+function loadCoupons() {
+    const coupons = db.getCoupons();
+    const tbody = document.getElementById('couponsTableBody');
+    
+    if (!tbody) return;
+    
+    if (coupons.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem;">No coupons yet</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = coupons.map(coupon => {
+        const now = new Date();
+        const expiry = new Date(coupon.expiryDate);
+        const status = now > expiry ? 'expired' : coupon.status;
+        const statusBg = status === 'active' ? '#27ae60' : status === 'expired' ? '#e74c3c' : '#95a5a6';
+        
+        return `
+            <tr>
+                <td><strong>${coupon.code}</strong></td>
+                <td>${coupon.type}</td>
+                <td>${coupon.type === 'percentage' ? coupon.value + '%' : '$' + coupon.value}</td>
+                <td>$${coupon.minPurchase || 0}</td>
+                <td>${coupon.usageLimit || '∞'}</td>
+                <td>${new Date(coupon.expiryDate).toLocaleDateString()}</td>
+                <td>
+                    <span style="padding: 0.25rem 0.5rem; background: ${statusBg}; color: white; border-radius: 3px; font-size: 0.8rem;">
+                        ${status}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-edit" onclick="editCoupon('${coupon.id}')">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-delete" onclick="deleteCoupon('${coupon.id}')">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function showCouponForm(couponId = null) {
+    const form = document.getElementById('couponForm');
+    const title = document.getElementById('couponFormTitle');
+    
+    if (couponId) {
+        const coupon = db.getCouponById(couponId);
+        title.textContent = 'Edit Coupon';
+        document.getElementById('couponId').value = couponId;
+        document.getElementById('couponCode').value = coupon.code || '';
+        document.getElementById('couponType').value = coupon.type || 'percentage';
+        document.getElementById('couponValue').value = coupon.value || '';
+        document.getElementById('couponMinPurchase').value = coupon.minPurchase || 0;
+        document.getElementById('couponUsageLimit').value = coupon.usageLimit || '';
+        document.getElementById('couponExpiryDate').value = coupon.expiryDate || '';
+        toggleCouponValueLabel();
+    } else {
+        title.textContent = 'Add Coupon';
+        document.getElementById('couponId').value = '';
+        document.getElementById('couponForm').querySelector('form').reset();
+        toggleCouponValueLabel();
+    }
+    
+    form.classList.add('active');
+}
+
+function closeCouponForm() {
+    document.getElementById('couponForm').classList.remove('active');
+}
+
+function saveCoupon(e) {
+    e.preventDefault();
+    const couponId = document.getElementById('couponId').value;
+    
+    const couponData = {
+        code: document.getElementById('couponCode').value.toUpperCase(),
+        type: document.getElementById('couponType').value,
+        value: parseFloat(document.getElementById('couponValue').value),
+        minPurchase: parseFloat(document.getElementById('couponMinPurchase').value) || 0,
+        usageLimit: document.getElementById('couponUsageLimit').value ? parseInt(document.getElementById('couponUsageLimit').value) : null,
+        expiryDate: document.getElementById('couponExpiryDate').value,
+        status: 'active'
+    };
+    
+    if (couponId) {
+        db.updateCoupon(couponId, couponData);
+        alert('Coupon updated successfully!');
+    } else {
+        db.addCoupon(couponData);
+        alert('Coupon added successfully!');
+    }
+    
+    closeCouponForm();
+    loadCoupons();
+}
+
+function editCoupon(couponId) {
+    showCouponForm(couponId);
+}
+
+function deleteCoupon(couponId) {
+    if (confirm('Are you sure you want to delete this coupon?')) {
+        db.deleteCoupon(couponId);
+        alert('Coupon deleted successfully!');
+        loadCoupons();
+    }
+}
+
+function toggleCouponValueLabel() {
+    const type = document.getElementById('couponType').value;
+    const label = document.getElementById('couponValueLabel');
+    label.textContent = type === 'percentage' ? 'Discount (%)' : 'Discount Amount ($)';
+}
+
+function loadCouponsToSelect() {
+    const coupons = db.getCoupons();
+    const select = document.getElementById('productCouponCode');
+    if (!select) return;
+    
+    const currentValue = select.value;
+    select.innerHTML = '<option value="">No coupon</option>';
+    
+    coupons.filter(c => c.status === 'active').forEach(coupon => {
+        const option = document.createElement('option');
+        option.value = coupon.id;
+        option.textContent = `${coupon.code} (${coupon.type === 'percentage' ? coupon.value + '%' : '$' + coupon.value})`;
+        select.appendChild(option);
+    });
+    
+    select.value = currentValue;
+}
+
+// Initialize updates on load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        if (typeof db !== 'undefined') {
+            loadCoupons();
+            updateShowProductForm();
+            updateSaveProduct();
+        }
+    }, 200);
+});
+

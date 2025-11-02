@@ -127,10 +127,105 @@
             background: white;
             padding: 2rem;
             border-radius: 10px;
-            max-width: 900px;
-            width: 90%;
-            max-height: 90vh;
+            max-width: 1200px;
+            width: 95%;
+            max-height: 95vh;
             overflow-y: auto;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .color-input-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            border: 2px solid #ddd;
+            cursor: pointer;
+        }
+
+        .gallery-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .gallery-item .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-image-btn {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            background: #f8f9fa;
+            transition: all 0.3s;
+        }
+
+        .add-image-btn:hover {
+            border-color: #333;
+            background: #e9ecef;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .tag {
+            background: #333;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tag .remove-tag {
+            cursor: pointer;
+            font-weight: bold;
         }
 
         .form-row {
@@ -281,6 +376,7 @@
             <button class="admin-tab active" onclick="showTab('dashboard', this)">Dashboard</button>
             <button class="admin-tab" onclick="showTab('users', this)">Users</button>
             <button class="admin-tab" onclick="showTab('products', this)">Products</button>
+            <button class="admin-tab" onclick="showTab('coupons', this)">Coupons</button>
             <button class="admin-tab" onclick="showTab('orders', this)">Orders</button>
             <button class="admin-tab" onclick="showTab('aliexpress', this)">AliExpress Import</button>
         </div>
@@ -603,50 +699,258 @@
             <h2 id="productFormTitle">Add Product</h2>
             <form onsubmit="saveProduct(event)">
                 <input type="hidden" id="productId">
+                
+                <div class="form-grid">
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <h4><i class="fas fa-info-circle"></i> Basic Information</h4>
+                        <div class="form-group">
+                            <label>SKU:</label>
+                            <input type="text" id="productSKU" placeholder="Auto-generated" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Product Name (English):</label>
+                            <input type="text" id="productNameEn" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Product Name (Vietnamese):</label>
+                            <input type="text" id="productNameVi" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Category:</label>
+                            <select id="productCategory" required>
+                                <option value="women-watches">Women's Watches</option>
+                                <option value="men-watches">Men's Watches</option>
+                                <option value="jewelry">Jewelry</option>
+                                <option value="bags">Bags</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Pricing & Inventory -->
+                    <div class="form-section">
+                        <h4><i class="fas fa-dollar-sign"></i> Pricing & Inventory</h4>
+                        <div class="form-group">
+                            <label>Price (USD):</label>
+                            <input type="number" id="productPrice" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Original Price (USD):</label>
+                            <input type="number" id="productOriginalPrice" step="0.01" placeholder="For discount display">
+                        </div>
+                        <div class="form-group">
+                            <label>Stock Quantity:</label>
+                            <input type="number" id="productStock" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Weight (kg):</label>
+                            <input type="number" id="productWeight" step="0.01" placeholder="For shipping">
+                        </div>
+                    </div>
+
+                    <!-- Product Variants -->
+                    <div class="form-section full-width">
+                        <h4><i class="fas fa-palette"></i> Product Variants</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Available Colors (hex code or name):</label>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="text" id="productColorInput" placeholder="#FF0000 or Red" style="flex: 1;">
+                                    <button type="button" class="btn btn-secondary" onclick="addColor()">
+                                        <i class="fas fa-plus"></i> Add
+                                    </button>
+                                </div>
+                                <div id="colorsList" class="tag-list">
+                                    <!-- Colors will appear here -->
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Available Sizes (comma separated):</label>
+                                <input type="text" id="productSizes" placeholder="S, M, L, XL">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Images -->
+                    <div class="form-section full-width">
+                        <h4><i class="fas fa-images"></i> Product Images</h4>
+                        <div class="form-group">
+                            <label>Main Image URL:</label>
+                            <input type="url" id="productImage" required>
+                        </div>
+                        <div class="gallery-upload">
+                            <label>Additional Images (Gallery):</label>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="url" id="galleryImageInput" placeholder="Image URL" style="flex: 1;">
+                                <button type="button" class="btn btn-secondary" onclick="addGalleryImage()">
+                                    <i class="fas fa-plus"></i> Add Image
+                                </button>
+                            </div>
+                            <div id="galleryImages" class="gallery-images">
+                                <!-- Gallery images will appear here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shipping -->
+                    <div class="form-section">
+                        <h4><i class="fas fa-shipping-fast"></i> Shipping</h4>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="productFreeShip" onchange="toggleShippingFee()">
+                                Free Shipping
+                            </label>
+                        </div>
+                        <div class="form-group" id="shippingFeeGroup">
+                            <label>Shipping Fee (USD):</label>
+                            <input type="number" id="productShippingFee" step="0.01" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Estimated Delivery Days:</label>
+                            <input type="number" id="productDeliveryDays" value="5">
+                        </div>
+                    </div>
+
+                    <!-- Marketing & Discount -->
+                    <div class="form-section">
+                        <h4><i class="fas fa-tags"></i> Marketing & Discount</h4>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="productIsNew">
+                                Mark as New Product
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="productIsHot">
+                                Mark as Hot/Bestseller
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>Discount Coupon Code:</label>
+                            <select id="productCouponCode">
+                                <option value="">No coupon</option>
+                                <!-- Coupons loaded dynamically -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Descriptions -->
+                    <div class="form-section full-width">
+                        <h4><i class="fas fa-align-left"></i> Product Descriptions</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Description (English):</label>
+                                <textarea id="productDescEn" rows="6"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Description (Vietnamese):</label>
+                                <textarea id="productDescVi" rows="6"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEO -->
+                    <div class="form-section full-width">
+                        <h4><i class="fas fa-search"></i> SEO & Keywords</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Meta Keywords (comma separated):</label>
+                                <input type="text" id="productKeywords" placeholder="watch, luxury, gold">
+                            </div>
+                            <div class="form-group">
+                                <label>Tags:</label>
+                                <input type="text" id="productTagsInput" placeholder="bestseller, new">
+                            </div>
+                        </div>
+                        <div id="tagsList" class="tag-list">
+                            <!-- Tags will appear here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeProductForm()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Save Product
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Coupons Tab -->
+    <div id="coupons" class="admin-content">
+        <div style="margin-bottom: 1rem;">
+            <button class="btn btn-add" onclick="showCouponForm()">
+                <i class="fas fa-plus"></i> Add Coupon
+            </button>
+        </div>
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Type</th>
+                        <th>Value</th>
+                        <th>Min Purchase</th>
+                        <th>Usage Limit</th>
+                        <th>Expiry Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="couponsTableBody">
+                    <!-- Coupons loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Coupon Form Modal -->
+    <div id="couponForm" class="modal-form">
+        <div class="modal-content" style="max-width: 600px;">
+            <h2 id="couponFormTitle">Add Coupon</h2>
+            <form onsubmit="saveCoupon(event)">
+                <input type="hidden" id="couponId">
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Name (English):</label>
-                        <input type="text" id="productNameEn" required>
+                        <label>Coupon Code:</label>
+                        <input type="text" id="couponCode" required style="text-transform: uppercase;">
                     </div>
                     <div class="form-group">
-                        <label>Name (Vietnamese):</label>
-                        <input type="text" id="productNameVi" required>
+                        <label>Discount Type:</label>
+                        <select id="couponType" required onchange="toggleCouponValueLabel()">
+                            <option value="percentage">Percentage (%)</option>
+                            <option value="fixed">Fixed Amount ($)</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Price:</label>
-                        <input type="number" id="productPrice" step="0.01" required>
+                        <label id="couponValueLabel">Discount Value:</label>
+                        <input type="number" id="couponValue" step="0.01" required>
                     </div>
                     <div class="form-group">
-                        <label>Stock:</label>
-                        <input type="number" id="productStock" required>
+                        <label>Minimum Purchase (USD):</label>
+                        <input type="number" id="couponMinPurchase" step="0.01" value="0">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>Category:</label>
-                    <select id="productCategory" required>
-                        <option value="women-watches">Women's Watches</option>
-                        <option value="men-watches">Men's Watches</option>
-                        <option value="jewelry">Jewelry</option>
-                        <option value="bags">Bags</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Image URL:</label>
-                    <input type="url" id="productImage" required>
-                </div>
-                <div class="form-group">
-                    <label>Description (English):</label>
-                    <textarea id="productDescEn" rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Description (Vietnamese):</label>
-                    <textarea id="productDescVi" rows="3"></textarea>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Usage Limit:</label>
+                        <input type="number" id="couponUsageLimit" placeholder="Unlimited">
+                    </div>
+                    <div class="form-group">
+                        <label>Expiry Date:</label>
+                        <input type="date" id="couponExpiryDate" required>
+                    </div>
                 </div>
                 <div style="display: flex; gap: 1rem; margin-top: 1rem;">
                     <button type="submit" class="btn btn-add" style="flex: 1;">Save</button>
-                    <button type="button" class="btn" onclick="closeProductForm()" style="flex: 1;">Cancel</button>
+                    <button type="button" class="btn" onclick="closeCouponForm()" style="flex: 1;">Cancel</button>
                 </div>
             </form>
         </div>

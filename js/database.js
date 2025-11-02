@@ -12,12 +12,21 @@ class Database {
             const defaultUsers = [{
                 id: 'admin_001',
                 name: 'Admin',
-                email: 'admin@luxedropship.com',
-                password: 'admin123',
+                email: 'admin@shopfreestyle.com',
+                password: 'Sangqn12',
                 role: 'admin',
                 createdAt: Date.now()
             }];
             localStorage.setItem('users', JSON.stringify(defaultUsers));
+        } else {
+            // Update admin password if exists
+            const usersArray = JSON.parse(users);
+            const adminIndex = usersArray.findIndex(u => u.id === 'admin_001');
+            if (adminIndex !== -1) {
+                usersArray[adminIndex].email = 'admin@shopfreestyle.com';
+                usersArray[adminIndex].password = 'Sangqn12';
+                localStorage.setItem('users', JSON.stringify(usersArray));
+            }
         }
         if (!localStorage.getItem('products')) {
             localStorage.setItem('products', JSON.stringify([
@@ -73,6 +82,9 @@ class Database {
         }
         if (!localStorage.getItem('orders')) {
             localStorage.setItem('orders', JSON.stringify([]));
+        }
+        if (!localStorage.getItem('coupons')) {
+            localStorage.setItem('coupons', JSON.stringify([]));
         }
     }
 
@@ -194,6 +206,52 @@ class Database {
             return orders[index];
         }
         return null;
+    }
+
+    // Coupon Management
+    addCoupon(coupon) {
+        const coupons = this.getCoupons();
+        const newCoupon = {
+            id: 'coupon_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+            ...coupon,
+            createdAt: Date.now(),
+            status: coupon.status || 'active'
+        };
+        coupons.push(newCoupon);
+        localStorage.setItem('coupons', JSON.stringify(coupons));
+        return newCoupon;
+    }
+
+    getCoupons() {
+        return JSON.parse(localStorage.getItem('coupons') || '[]');
+    }
+
+    getCouponById(id) {
+        const coupons = this.getCoupons();
+        return coupons.find(c => c.id === id);
+    }
+
+    getCouponByCode(code) {
+        const coupons = this.getCoupons();
+        return coupons.find(c => c.code === code && c.status === 'active');
+    }
+
+    updateCoupon(id, updates) {
+        const coupons = this.getCoupons();
+        const index = coupons.findIndex(c => c.id === id);
+        if (index !== -1) {
+            coupons[index] = { ...coupons[index], ...updates };
+            localStorage.setItem('coupons', JSON.stringify(coupons));
+            return coupons[index];
+        }
+        return null;
+    }
+
+    deleteCoupon(id) {
+        const coupons = this.getCoupons();
+        const filtered = coupons.filter(c => c.id !== id);
+        localStorage.setItem('coupons', JSON.stringify(filtered));
+        return true;
     }
 }
 

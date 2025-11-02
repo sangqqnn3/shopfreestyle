@@ -153,6 +153,22 @@
                         </div>
                     </div>
 
+                    <!-- Coupon Code -->
+                    <div id="productCouponSection" class="coupon-section" style="display: none; margin-bottom: 1.5rem; padding: 1rem; background: #f0f8f0; border-radius: 8px; border: 2px solid #27ae60;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <i class="fas fa-ticket-alt" style="color: #27ae60;"></i>
+                            <strong style="color: #27ae60;">Special Discount Available!</strong>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="text" id="couponInput" placeholder="Enter coupon code" 
+                                   style="flex: 1; padding: 0.75rem; border: 1px solid #27ae60; border-radius: 4px;">
+                            <button onclick="applyCoupon()" style="padding: 0.75rem 1.5rem; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                                Apply
+                            </button>
+                        </div>
+                        <div id="couponMessage" style="margin-top: 0.5rem; font-size: 0.9rem;"></div>
+                    </div>
+
                     <!-- Action Buttons -->
                     <div class="action-buttons">
                         <button class="btn-add-to-cart" onclick="addToCartFromDetail()">

@@ -30,9 +30,79 @@ function loadProductDetails() {
     if (product) {
         displayProductDetails(product);
         loadRelatedProducts(product.category);
+        checkCouponAvailability(product);
     } else {
         console.error('Product not found');
     }
+}
+
+// Check if coupon is available for product
+function checkCouponAvailability(product) {
+    // Check if product has coupon code
+    if (product.couponCode) {
+        document.getElementById('productCouponSection').style.display = 'block';
+    }
+}
+
+// Apply coupon
+function applyCoupon() {
+    const couponCode = document.getElementById('couponInput').value.toUpperCase().trim();
+    const messageDiv = document.getElementById('couponMessage');
+    
+    if (!couponCode) {
+        messageDiv.innerHTML = '<span style="color: #e74c3c;">Please enter a coupon code</span>';
+        return;
+    }
+    
+    // Get coupon from database
+    const coupon = db.getCouponByCode(couponCode);
+    
+    if (!coupon) {
+        messageDiv.innerHTML = '<span style="color: #e74c3c;">Invalid coupon code</span>';
+        return;
+    }
+    
+    // Check expiry
+    const now = new Date();
+    const expiry = new Date(coupon.expiryDate);
+    
+    if (now > expiry) {
+        messageDiv.innerHTML = '<span style="color: #e74c3c;">This coupon has expired</span>';
+        return;
+    }
+    
+    // Apply discount
+    const productPrice = parseFloat(document.getElementById('currentPrice').textContent.replace('$', ''));
+    let discount = 0;
+    let finalPrice = productPrice;
+    
+    if (coupon.type === 'percentage') {
+        discount = productPrice * (coupon.value / 100);
+    } else {
+        discount = coupon.value;
+    }
+    
+    finalPrice = productPrice - discount;
+    
+    if (finalPrice < 0) finalPrice = 0;
+    
+    // Update UI
+    const originalPriceElement = document.getElementById('currentPrice');
+    const originalPriceHTML = originalPriceElement.outerHTML;
+    
+    originalPriceElement.innerHTML = `
+        ${originalPriceElement.textContent}
+        <div style="margin-top: 0.5rem;">
+            <span style="color: #27ae60; font-size: 1.5rem; font-weight: 700;">$${finalPrice.toFixed(2)}</span>
+            <span style="text-decoration: line-through; color: #999; margin-left: 0.5rem;">$${productPrice.toFixed(2)}</span>
+        </div>
+    `;
+    
+    messageDiv.innerHTML = `<span style="color: #27ae60;"><i class="fas fa-check-circle"></i> Coupon applied! You saved $${discount.toFixed(2)}</span>`;
+    
+    // Store applied coupon
+    window.appliedCoupon = coupon;
+    window.productDiscount = discount;
 }
 
 // Display product details
@@ -47,18 +117,84 @@ function displayProductDetails(product) {
     document.getElementById('productTitle').textContent = lang === 'en' ? (product.nameEn || product.name) : product.name;
     
     // Update price
-    document.getElementById('currentPrice').textContent = '$' + product.price.toFixed(2);
+    const currentPriceEl = document.getElementById('currentPrice');
+    currentPriceEl.textContent = '$' + product.price.toFixed(2);
+    
+    // Update original price if exists
+    if (product.originalPrice && product.originalPrice > product.price) {
+        const originalPriceEl = document.getElementById('originalPrice');
+        originalPriceEl.textContent = '$' + product.originalPrice.toFixed(2);
+        originalPriceEl.style.display = 'inline';
+        
+        // Calculate discount badge
+        const discount = ((product.originalPrice - product.price) / product.originalPrice * 100).toFixed(0);
+        const badge = document.createElement('span');
+        badge.className = 'discount-badge';
+        badge.textContent = discount + '% OFF';
+        currentPriceEl.parentElement.appendChild(badge);
+    }
+    
+    // Update badges
+    const badgesContainer = document.getElementById('productBadges');
+    badgesContainer.innerHTML = '';
+    if (product.isNew) {
+        badgesContainer.innerHTML += '<span class="badge new">NEW</span>';
+    }
+    if (product.isHot) {
+        badgesContainer.innerHTML += '<span class="badge hot">HOT</span>';
+    }
+    
+    // Update shipping info
+    const shippingInfo = document.querySelector('.shipping-info');
+    if (product.freeShipping) {
+        shippingInfo.querySelector('.info-item:first-child strong').textContent = 'Free Shipping';
+    } else if (product.shippingFee) {
+        shippingInfo.querySelector('.info-item:first-child strong').textContent = 'Shipping: $' + product.shippingFee.toFixed(2);
+    }
+    
+    // Update delivery days
+    if (product.deliveryDays) {
+        const deliveryText = shippingInfo.querySelector('.info-item:first-child p');
+        deliveryText.textContent = 'Estimated delivery: ' + product.deliveryDays + ' days';
+    }
     
     // Update main image if product has image
     if (product.image) {
         const mainImg = document.getElementById('mainProductImage');
         mainImg.src = product.image;
         
-        // Update all thumbnails
-        document.querySelectorAll('.thumbnail-item').forEach(item => {
-            const img = item.querySelector('img');
-            if (img) img.src = product.image;
-        });
+        // Update thumbnails with main image + gallery images
+        const allImages = [product.image, ...(product.galleryImages || [])];
+        const thumbnailContainer = document.querySelector('.thumbnail-sidebar');
+        
+        if (allImages.length > 0) {
+            thumbnailContainer.innerHTML = allImages.map((imgUrl, index) => `
+                <div class="thumbnail-item ${index === 0 ? 'active' : ''}" 
+                     onclick="selectMainImage(this)" 
+                     data-image="${imgUrl}">
+                    <img src="${imgUrl}" alt="Thumbnail ${index + 1}">
+                </div>
+            `).join('');
+        } else {
+            // Fallback to old method if no gallery
+            document.querySelectorAll('.thumbnail-item').forEach(item => {
+                const img = item.querySelector('img');
+                if (img) img.src = product.image;
+            });
+        }
+    }
+    
+    // Update colors if available
+    if (product.colors && product.colors.length > 0) {
+        const colorsContainer = document.querySelector('.product-options .option-items:first-child');
+        colorsContainer.innerHTML = product.colors.map((color, index) => `
+            <div class="option-item color-option ${index === 0 ? 'active' : ''}" 
+                 data-option="${color}" 
+                 onclick="selectOption(this, 'color')">
+                <div class="color-swatch" style="background: ${color};"></div>
+                <span>${color}</span>
+            </div>
+        `).join('');
     }
     
     // Store product ID for cart
