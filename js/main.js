@@ -124,8 +124,17 @@ function addToCart(productId) {
 }
 
 // Remove from Cart
-function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
+function removeFromCart(productId, index) {
+    // If index is provided, remove specific item by index
+    if (typeof index !== 'undefined') {
+        cart.splice(index, 1);
+    } else {
+        // Otherwise, remove first matching item
+        const itemIndex = cart.findIndex(item => item.id === productId);
+        if (itemIndex !== -1) {
+            cart.splice(itemIndex, 1);
+        }
+    }
     updateCart();
     saveCart();
 }
@@ -150,14 +159,14 @@ function updateCart() {
     const total = cart.reduce((sum, item) => sum + item.price, 0);
     cartTotal.textContent = '$' + total.toFixed(2);
     
-    cartContent.innerHTML = cart.map(item => `
+    cartContent.innerHTML = cart.map((item, index) => `
         <div class="cart-item">
             <img src="${item.image}" alt="${item.name}" class="cart-item-image">
             <div class="cart-item-info">
                 <h4>${item.name}</h4>
                 <p>$${item.price.toFixed(2)}</p>
             </div>
-            <button class="cart-item-remove" onclick="removeFromCart('${item.id}')">
+            <button class="cart-item-remove" onclick="removeFromCart('${item.id}', ${index})">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -169,18 +178,25 @@ function updateCart() {
 // Update Cart Icon
 function updateCartIcon() {
     const cartIcon = document.getElementById('cartIcon');
+    if (!cartIcon) return;
+    
+    // Remove existing badge if exists
+    const existingBadge = cartIcon.querySelector('.cart-badge');
+    if (existingBadge) {
+        existingBadge.remove();
+    }
+    
     if (cart.length > 0) {
-        cartIcon.innerHTML = `
-            <i class="fas fa-shopping-bag"></i>
-            <span style="position: absolute; top: -8px; right: -8px; background: var(--primary-color); color: white; 
-                         border-radius: 50%; width: 20px; height: 20px; font-size: 12px; 
-                         display: flex; align-items: center; justify-content: center;">
-                ${cart.length}
-            </span>
-        `;
         cartIcon.style.position = 'relative';
+        const badge = document.createElement('span');
+        badge.className = 'cart-badge';
+        badge.style.cssText = `position: absolute; top: -8px; right: -8px; background: var(--primary-color); color: white; 
+                                border-radius: 50%; width: 20px; height: 20px; font-size: 12px; 
+                                display: flex; align-items: center; justify-content: center;`;
+        badge.textContent = cart.length;
+        cartIcon.appendChild(badge);
     } else {
-        cartIcon.innerHTML = '<i class="fas fa-shopping-bag"></i>';
+        cartIcon.style.position = '';
     }
 }
 
@@ -284,19 +300,21 @@ function generateOrderId() {
 
 // Setup Event Listeners
 function setupEventListeners() {
-    // Cart icon click
+    // Cart icon click - avoid duplicate
     const cartIcon = document.getElementById('cartIcon');
-    if (cartIcon) {
+    if (cartIcon && !cartIcon.dataset.listenerAttached) {
         cartIcon.addEventListener('click', openCart);
+        cartIcon.dataset.listenerAttached = 'true';
     }
     
-    // Search icon click
+    // Search icon click - avoid duplicate
     const searchIcon = document.getElementById('searchIcon');
     const searchModal = document.getElementById('searchModal');
-    if (searchIcon) {
+    if (searchIcon && !searchIcon.dataset.listenerAttached) {
         searchIcon.addEventListener('click', () => {
             searchModal.style.display = 'block';
         });
+        searchIcon.dataset.listenerAttached = 'true';
     }
 }
 

@@ -353,24 +353,29 @@ function loadRelatedProducts(category) {
 
 // Setup event listeners
 function setupDetailEventListeners() {
-    // Search icon
+    // Search icon - only if visible
     const searchIcon = document.getElementById('searchIcon');
-    if (searchIcon) {
-        searchIcon.addEventListener('click', () => {
+    if (searchIcon && searchIcon.style.display !== 'none') {
+        // Remove existing listeners to avoid duplicates
+        const newSearchIcon = searchIcon.cloneNode(true);
+        searchIcon.parentNode.replaceChild(newSearchIcon, searchIcon);
+        newSearchIcon.addEventListener('click', () => {
             document.getElementById('searchModal').style.display = 'block';
         });
     }
     
-    // Cart icon
+    // Cart icon - avoid duplicate
     const cartIcon = document.getElementById('cartIcon');
-    if (cartIcon) {
+    if (cartIcon && !cartIcon.dataset.listenerAttached) {
         cartIcon.addEventListener('click', openCart);
+        cartIcon.dataset.listenerAttached = 'true';
     }
     
-    // User icon
+    // User icon - avoid duplicate
     const userIcon = document.getElementById('userIcon');
-    if (userIcon) {
+    if (userIcon && !userIcon.dataset.listenerAttached) {
         userIcon.addEventListener('click', toggleUserDropdown);
+        userIcon.dataset.listenerAttached = 'true';
     }
 }
 
