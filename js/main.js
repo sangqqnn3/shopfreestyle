@@ -341,6 +341,96 @@ function closeSearch() {
     document.getElementById('searchModal').style.display = 'none';
 }
 
+// Handle header search (for search bar in header)
+function handleHeaderSearch(event) {
+    if (event.key === 'Enter') {
+        executeHeaderSearch();
+    }
+}
+
+// Execute header search
+function executeHeaderSearch() {
+    const searchInput = document.getElementById('headerSearchInput');
+    const query = searchInput.value.trim();
+    
+    if (!query) return;
+    
+    // Redirect to search results page or show modal
+    if (window.location.pathname.includes('product.html')) {
+        // If on product page, show modal with results
+        showSearchModal(query);
+    } else {
+        // Store search query and filter products
+        filterProductsBySearch(query);
+    }
+}
+
+// Filter products by search query
+function filterProductsBySearch(query) {
+    const products = db.getProducts();
+    const lang = i18n.getLanguage();
+    const queryLower = query.toLowerCase();
+    
+    const filteredProducts = products.filter(product => {
+        const name = lang === 'en' ? product.nameEn : product.name;
+        const category = product.category || '';
+        const keywords = (product.keywords || '').toLowerCase();
+        const tags = (product.tags || '').toLowerCase();
+        const description = (product.descriptionEn || product.description || '').toLowerCase();
+        
+        return (
+            name.toLowerCase().includes(queryLower) ||
+            category.toLowerCase().includes(queryLower) ||
+            keywords.includes(queryLower) ||
+            tags.includes(queryLower) ||
+            description.includes(queryLower)
+        );
+    });
+    
+    // If on category page, filter current products
+    if (document.getElementById('productsGrid')) {
+        const productsGrid = document.getElementById('productsGrid');
+        const lang = i18n.getLanguage();
+        
+        productsGrid.innerHTML = filteredProducts.map(product => `
+            <div class="product-card">
+                ${product.isNew ? `<div class="new-badge">NEW</div>` : ''}
+                ${product.isHot ? `<div class="badge hot">HOT</div>` : ''}
+                <img src="${product.image}" alt="${lang === 'en' ? product.nameEn : product.name}" 
+                     class="product-image"
+                     onclick="window.location.href='product.html?id=${product.id}'" 
+                     style="cursor: pointer;">
+                <div class="product-info">
+                    <h3 class="product-title" style="cursor: pointer;" 
+                        onclick="window.location.href='product.html?id=${product.id}'">
+                        ${lang === 'en' ? product.nameEn : product.name}
+                    </h3>
+                    <p class="product-price">$${product.price.toFixed(2)}</p>
+                    <button class="product-button" onclick="addToCart('${product.id}')">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        // Show search modal with results
+        showSearchModal(query);
+    }
+}
+
+// Show search modal with results
+function showSearchModal(query) {
+    const searchModal = document.getElementById('searchModal');
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    
+    if (searchModal && searchInput) {
+        searchInput.value = query;
+        searchModal.style.display = 'block';
+        searchProducts({ target: searchInput });
+    }
+}
+
 // Login/Register Modals
 function showLoginModal(e) {
     if (e) e.preventDefault();

@@ -23,16 +23,121 @@
                     <li><a href="#">About</a></li>
                 </ul>
             </nav>
+            <div class="header-search-container">
+                <div class="header-search-bar">
+                    <input type="text" class="header-search-input" id="headerSearchInput" placeholder="Search products..." onkeyup="handleHeaderSearch(event)">
+                    <button class="header-search-btn" onclick="executeHeaderSearch()">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </div>
             <div class="header-right">
                 <div id="languageSwitcher" class="language-switcher"></div>
                 <div class="header-icons">
-                    <i class="fas fa-search" id="searchIcon"></i>
+                    <i class="fas fa-search" id="searchIcon" style="display: none;"></i>
                     <i class="fas fa-user" id="userIcon"></i>
                     <i class="fas fa-shopping-bag" id="cartIcon"></i>
                 </div>
             </div>
         </div>
     </header>
+
+    <!-- Search Modal -->
+    <div id="searchModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSearch()">&times;</span>
+            <h2>Search Products</h2>
+            <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts(event)">
+            <div id="searchResults"></div>
+        </div>
+    </div>
+
+    <!-- User Dropdown -->
+    <div id="userDropdown" class="user-dropdown hidden">
+        <div id="userMenu">
+            <a href="#" onclick="showLoginModal(event)">Login</a>
+            <a href="#" onclick="showRegisterModal(event)">Register</a>
+        </div>
+        <div id="loggedInMenu" class="hidden">
+            <span id="userName"></span>
+            <a href="payout.html">Cart</a>
+            <a href="#" id="logoutBtn">Logout</a>
+            <a href="admin.html" id="adminLink" class="hidden">Admin</a>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div id="cartSidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h3>Cart</h3>
+            <button class="cart-close" onclick="closeCart()"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="cartContent" class="cart-content">
+            <div class="cart-empty">
+                <i class="fas fa-shopping-cart"></i>
+                <p>Your cart is empty</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0.00</span>
+            </div>
+            <button class="checkout-btn" onclick="goToCheckout()">Checkout</button>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close" onclick="closeLoginModal()">&times;</span>
+            <h2>Login</h2>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="loginEmailInput" required>
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="loginPasswordInput" required>
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+                <p style="text-align: center; margin-top: 1rem;">
+                    Don't have an account? <a href="#" onclick="showRegisterModal(event)" style="color: var(--primary-color);">Register</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close" onclick="closeRegisterModal()">&times;</span>
+            <h2>Register</h2>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Full Name:</label>
+                    <input type="text" id="registerNameInput" required>
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="registerEmailInput" required>
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="registerPasswordInput" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password:</label>
+                    <input type="password" id="registerPasswordConfirmInput" required>
+                </div>
+                <button type="submit" class="submit-btn">Register</button>
+                <p style="text-align: center; margin-top: 1rem;">
+                    Already have an account? <a href="#" onclick="showLoginModal(event)" style="color: var(--primary-color);">Login</a>
+                </p>
+            </form>
+        </div>
+    </div>
 
     <!-- Product Details -->
     <main class="product-detail-page">

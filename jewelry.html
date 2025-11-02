@@ -23,10 +23,18 @@
                     <li><a href="#" data-i18n="about">About</a></li>
                 </ul>
             </nav>
+            <div class="header-search-container">
+                <div class="header-search-bar">
+                    <input type="text" class="header-search-input" id="headerSearchInput" placeholder="Search products..." onkeyup="handleHeaderSearch(event)">
+                    <button class="header-search-btn" onclick="executeHeaderSearch()">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </div>
             <div class="header-right">
                 <div id="languageSwitcher" class="language-switcher"></div>
                 <div class="header-icons">
-                    <i class="fas fa-search" id="searchIcon"></i>
+                    <i class="fas fa-search" id="searchIcon" style="display: none;"></i>
                     <i class="fas fa-user" id="userIcon"></i>
                     <i class="fas fa-shopping-bag" id="cartIcon"></i>
                 </div>
