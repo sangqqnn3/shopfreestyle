@@ -2214,7 +2214,7 @@ body {
     border-top: 1px solid #e0e0e0;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1450px) {
     .product-detail-layout {
         grid-template-columns: 1fr;
     }
