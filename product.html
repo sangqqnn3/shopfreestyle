@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Product Details - Shop Free Style">
+    <title>Product Details - Shop Free Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">Shop Free Style</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="watches.html">Watches</a></li>
+                    <li><a href="jewelry.html">Jewelry</a></li>
+                    <li><a href="bags.html">Bags</a></li>
+                    <li><a href="#">About</a></li>
+                </ul>
+            </nav>
+            <div class="header-right">
+                <div id="languageSwitcher" class="language-switcher"></div>
+                <div class="header-icons">
+                    <i class="fas fa-search" id="searchIcon"></i>
+                    <i class="fas fa-user" id="userIcon"></i>
+                    <i class="fas fa-shopping-bag" id="cartIcon"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Product Details -->
+    <main class="product-detail-page">
+        <div class="container">
+            <nav class="breadcrumb-nav">
+                <a href="index.html">Home</a>
+                <span> / </span>
+                <a href="#" id="categoryBreadcrumb">Category</a>
+                <span> / </span>
+                <span id="productNameBreadcrumb">Product</span>
+            </nav>
+
+            <div class="product-detail-layout">
+                <!-- Product Images -->
+                <div class="product-images-section">
+                    <div class="thumbnail-sidebar">
+                        <div class="thumbnail-item active" onclick="selectMainImage(this)" data-image="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80">
+                            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Thumbnail">
+                        </div>
+                        <div class="thumbnail-item" onclick="selectMainImage(this)" data-image="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80">
+                            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Thumbnail">
+                        </div>
+                        <div class="thumbnail-item" onclick="selectMainImage(this)" data-image="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80">
+                            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Thumbnail">
+                        </div>
+                    </div>
+                    <div class="main-image-container">
+                        <div class="main-image-wrapper">
+                            <img id="mainProductImage" src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Main Product">
+                            <button class="zoom-btn" onclick="openImageZoom()">
+                                <i class="fas fa-search-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="product-info-section">
+                    <div id="productBadges" class="product-badges">
+                        <span class="badge new">NEW</span>
+                        <span class="badge hot">HOT</span>
+                    </div>
+                    <h1 class="product-title" id="productTitle">Premium Women's Watch</h1>
+                    
+                    <!-- Rating & Reviews -->
+                    <div class="rating-section">
+                        <div class="stars">
+                            <i class="fas fa-star active"></i>
+                            <i class="fas fa-star active"></i>
+                            <i class="fas fa-star active"></i>
+                            <i class="fas fa-star active"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="rating-number">4.5</span>
+                        <span class="rating-count">(128 reviews)</span>
+                        <a href="#reviews" class="view-reviews-link">View all reviews</a>
+                    </div>
+
+                    <!-- Price Section -->
+                    <div class="price-section">
+                        <div class="current-price-wrapper">
+                            <span class="current-price" id="currentPrice">$89.95</span>
+                            <span class="original-price" id="originalPrice">$149.95</span>
+                            <span class="discount-badge">40% OFF</span>
+                        </div>
+                        <div class="price-note">
+                            <i class="fas fa-info-circle"></i> Best price guaranteed
+                        </div>
+                    </div>
+
+                    <!-- Product Options -->
+                    <div class="product-options">
+                        <!-- Color Selection -->
+                        <div class="option-group">
+                            <label class="option-label">Color:</label>
+                            <div class="option-items">
+                                <div class="option-item color-option active" data-option="white" onclick="selectOption(this, 'color')">
+                                    <div class="color-swatch" style="background: white; border: 2px solid #ddd;"></div>
+                                    <span>White</span>
+                                </div>
+                                <div class="option-item color-option" data-option="black" onclick="selectOption(this, 'color')">
+                                    <div class="color-swatch" style="background: #000;"></div>
+                                    <span>Black</span>
+                                </div>
+                                <div class="option-item color-option" data-option="rose-gold" onclick="selectOption(this, 'color')">
+                                    <div class="color-swatch" style="background: #e8b4b8;"></div>
+                                    <span>Rose Gold</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Size Selection -->
+                        <div class="option-group">
+                            <label class="option-label">Size:</label>
+                            <div class="option-items">
+                                <div class="option-item active" data-option="standard" onclick="selectOption(this, 'size')">
+                                    <span>Standard</span>
+                                </div>
+                                <div class="option-item" data-option="large" onclick="selectOption(this, 'size')">
+                                    <span>Large</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quantity -->
+                        <div class="quantity-group">
+                            <label class="option-label">Quantity:</label>
+                            <div class="quantity-selector">
+                                <button class="qty-btn" onclick="changeQuantity(-1)">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <input type="number" id="quantity" value="1" min="1" max="10" readonly>
+                                <button class="qty-btn" onclick="changeQuantity(1)">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <span class="stock-info"><i class="fas fa-check-circle"></i> In Stock (50)</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn-add-to-cart" onclick="addToCartFromDetail()">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                        <button class="btn-buy-now" onclick="buyNow()">
+                            <i class="fas fa-bolt"></i> Buy Now
+                        </button>
+                        <button class="btn-wishlist" onclick="toggleWishlist()">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+
+                    <!-- Shipping Info -->
+                    <div class="shipping-info">
+                        <div class="info-item">
+                            <i class="fas fa-shipping-fast"></i>
+                            <div>
+                                <strong>Free Shipping</strong>
+                                <p>Estimated delivery: 5-7 days</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-undo"></i>
+                            <div>
+                                <strong>30-Day Returns</strong>
+                                <p>Hassle-free returns</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <div>
+                                <strong>Secure Payment</strong>
+                                <p>Protected by BitPay</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seller Info -->
+                    <div class="seller-info">
+                        <div class="seller-header">
+                            <span>Sold by:</span>
+                            <strong>Shop Free Style Store</strong>
+                        </div>
+                        <div class="seller-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">98%</span>
+                                <span class="stat-label">Positive</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">5K+</span>
+                                <span class="stat-label">Orders</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">1 Yr</span>
+                                <span class="stat-label">On Platform</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Details Tabs -->
+            <div class="product-tabs-section">
+                <div class="tabs-header">
+                    <button class="tab-btn active" onclick="showTab('description')">Description</button>
+                    <button class="tab-btn" onclick="showTab('specifications')">Specifications</button>
+                    <button class="tab-btn" onclick="showTab('reviews')">Reviews (128)</button>
+                    <button class="tab-btn" onclick="showTab('shipping')">Shipping & Returns</button>
+                </div>
+                
+                <div class="tabs-content">
+                    <div class="tab-panel active" id="description">
+                        <h3>Product Description</h3>
+                        <p>Premium women's watch with elegant design and luxurious materials. This stunning timepiece features a classic round dial with modern minimalist aesthetics, making it perfect for both casual and formal occasions.</p>
+                        <h4>Key Features:</h4>
+                        <ul>
+                            <li>Stainless steel case with rose gold PVD coating</li>
+                            <li>Genuine leather strap, comfortable and durable</li>
+                            <li>Japanese quartz movement for accurate timekeeping</li>
+                            <li>Water resistant up to 30 meters</li>
+                            <li>Mineral crystal glass protection</li>
+                            <li>Date display function</li>
+                        </ul>
+                        <h4>Perfect For:</h4>
+                        <ul>
+                            <li>Daily wear</li>
+                            <li>Business meetings</li>
+                            <li>Special occasions</li>
+                            <li>Gift giving</li>
+                        </ul>
+                    </div>
+
+                    <div class="tab-panel" id="specifications">
+                        <table class="specs-table">
+                            <tr>
+                                <td><strong>Brand</strong></td>
+                                <td>Shop Free Style</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Model</strong></td>
+                                <td>SFS-W100</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Case Material</strong></td>
+                                <td>Stainless Steel</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Case Size</strong></td>
+                                <td>36mm</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Band Material</strong></td>
+                                <td>Genuine Leather</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Band Width</strong></td>
+                                <td>18mm</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Movement</strong></td>
+                                <td>Japanese Quartz</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Water Resistance</strong></td>
+                                <td>30 meters</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Warranty</strong></td>
+                                <td>2 years</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="tab-panel" id="reviews">
+                        <div class="reviews-summary">
+                            <div class="summary-left">
+                                <div class="overall-rating">
+                                    <span class="big-rating">4.5</span>
+                                    <div class="stars">
+                                        <i class="fas fa-star active"></i>
+                                        <i class="fas fa-star active"></i>
+                                        <i class="fas fa-star active"></i>
+                                        <i class="fas fa-star active"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <span>Based on 128 reviews</span>
+                                </div>
+                            </div>
+                            <div class="summary-right">
+                                <div class="rating-bar">
+                                    <span>5 <i class="fas fa-star"></i></span>
+                                    <div class="bar">
+                                        <div class="fill" style="width: 70%"></div>
+                                    </div>
+                                    <span>70%</span>
+                                </div>
+                                <div class="rating-bar">
+                                    <span>4 <i class="fas fa-star"></i></span>
+                                    <div class="bar">
+                                        <div class="fill" style="width: 20%"></div>
+                                    </div>
+                                    <span>20%</span>
+                                </div>
+                                <div class="rating-bar">
+                                    <span>3 <i class="fas fa-star"></i></span>
+                                    <div class="bar">
+                                        <div class="fill" style="width: 5%"></div>
+                                    </div>
+                                    <span>5%</span>
+                                </div>
+                                <div class="rating-bar">
+                                    <span>2 <i class="fas fa-star"></i></span>
+                                    <div class="bar">
+                                        <div class="fill" style="width: 3%"></div>
+                                    </div>
+                                    <span>3%</span>
+                                </div>
+                                <div class="rating-bar">
+                                    <span>1 <i class="fas fa-star"></i></span>
+                                    <div class="bar">
+                                        <div class="fill" style="width: 2%"></div>
+                                    </div>
+                                    <span>2%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="reviewer-info">
+                                    <strong>Sarah M.</strong>
+                                    <div class="stars">
+                                        <i class="fas fa-star active"></i>
+                                        <i class="fas fa-star active"></i>
+                                        <i class="fas fa-star active"></i>
+                                        <i class="fas fa-star active"></i>
+                                        <i class="fas fa-star active"></i>
+                                    </div>
+                                </div>
+                                <span class="review-date">2 days ago</span>
+                            </div>
+                            <p>Absolutely love this watch! The quality is outstanding and it looks even better in person. The strap is comfortable and the size is perfect. Highly recommend!</p>
+                        </div>
+
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="reviewer-info">
+                                    <strong>Emma L.</strong>
+                                    <div class="stars">
+                                        <i class="fas fa-star active"></i>
+                                        <i class="fas fa-star active"></i>
+                                        <i class="fas fa-star active"></i>
+                                        <i class="fas fa-star active"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                                <span class="review-date">1 week ago</span>
+                            </div>
+                            <p>Great watch for the price. The design is elegant and it's very comfortable to wear all day. Shipping was fast too!</p>
+                        </div>
+                    </div>
+
+                    <div class="tab-panel" id="shipping">
+                        <h3>Shipping Information</h3>
+                        <div class="shipping-details">
+                            <div class="detail-item">
+                                <i class="fas fa-truck"></i>
+                                <div>
+                                    <strong>Free Standard Shipping</strong>
+                                    <p>Delivery time: 5-7 business days</p>
+                                    <p>We ship to most countries worldwide</p>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-box"></i>
+                                <div>
+                                    <strong>Packaging</strong>
+                                    <p>Products are carefully packaged in protective boxes</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3>Returns & Warranty</h3>
+                        <div class="returns-details">
+                            <div class="detail-item">
+                                <i class="fas fa-undo"></i>
+                                <div>
+                                    <strong>30-Day Return Policy</strong>
+                                    <p>We offer hassle-free returns within 30 days of purchase</p>
+                                    <p>Items must be in original condition with all tags attached</p>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <div>
+                                    <strong>2-Year Warranty</strong>
+                                    <p>All watches come with manufacturer warranty</p>
+                                    <p>Covers manufacturing defects and material issues</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Products -->
+            <section class="related-products-section">
+                <h2 class="section-title">You May Also Like</h2>
+                <div class="products-grid" id="relatedProducts">
+                    <!-- Related products loaded dynamically -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Shop</h3>
+                <ul>
+                    <li><a href="watches.html">Women's Watches</a></li>
+                    <li><a href="watches.html">Men's Watches</a></li>
+                    <li><a href="jewelry.html">Jewelry</a></li>
+                    <li><a href="bags.html">Bags</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">Returns</a></li>
+                    <li><a href="#">Shipping</a></li>
+                    <li><a href="#">Warranty</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect</h3>
+                <ul>
+                    <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
+                    <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+                    <li><a href="#"><i class="fab fa-twitter"></i> Twitter</a></li>
+                    <li><a href="#"><i class="fab fa-pinterest"></i> Pinterest</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Shop Free Style. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/database.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/product-detail.js"></script>
+</body>
+</html>
+

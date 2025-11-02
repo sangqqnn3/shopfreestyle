@@ -346,15 +346,16 @@ function displayProducts(products) {
             <div class="product-card category-product-card">
                 ${product.isNew ? '<div class="new-badge">NEW</div>' : ''}
                 <div class="product-image-wrapper">
-                    <img src="${product.image}" alt="${product.nameEn || product.name}" class="product-image">
+                    <img src="${product.image}" alt="${product.nameEn || product.name}" class="product-image" 
+                         onclick="window.location.href='product.html?id=${product.id}'" style="cursor: pointer;">
                     <div class="product-overlay">
-                        <button class="quick-view-btn" onclick="showQuickView('${product.id}')">
+                        <button class="quick-view-btn" onclick="window.location.href='product.html?id=${product.id}'">
                             <i class="fas fa-eye"></i> Quick View
                         </button>
                     </div>
                 </div>
                 <div class="product-info">
-                    <h3 class="product-title">${lang === 'en' ? (product.nameEn || product.name) : product.name}</h3>
+                    <h3 class="product-title" style="cursor: pointer;" onclick="window.location.href='product.html?id=${product.id}'">${lang === 'en' ? (product.nameEn || product.name) : product.name}</h3>
                     <p class="product-price">$${product.price.toFixed(2)}</p>
                     <button class="product-button" onclick="addToCart('${product.id}')">
                         <i class="fas fa-shopping-cart"></i> Add to Cart
@@ -367,16 +368,17 @@ function displayProducts(products) {
         container.innerHTML = products.map(product => `
             <div class="product-card-list">
                 <div class="product-image-wrapper">
-                    <img src="${product.image}" alt="${product.nameEn || product.name}" class="product-image">
+                    <img src="${product.image}" alt="${product.nameEn || product.name}" class="product-image"
+                         onclick="window.location.href='product.html?id=${product.id}'" style="cursor: pointer;">
                     ${product.isNew ? '<div class="new-badge">NEW</div>' : ''}
                 </div>
                 <div class="product-details-list">
-                    <h3 class="product-title">${lang === 'en' ? (product.nameEn || product.name) : product.name}</h3>
+                    <h3 class="product-title" style="cursor: pointer;" onclick="window.location.href='product.html?id=${product.id}'">${lang === 'en' ? (product.nameEn || product.name) : product.name}</h3>
                     <p class="product-description">${lang === 'en' ? (product.descriptionEn || product.description) : product.description}</p>
                     <div class="product-actions-list">
                         <p class="product-price">$${product.price.toFixed(2)}</p>
                         <div class="action-buttons">
-                            <button class="quick-view-btn" onclick="showQuickView('${product.id}')">
+                            <button class="quick-view-btn" onclick="window.location.href='product.html?id=${product.id}'">
                                 <i class="fas fa-eye"></i> Quick View
                             </button>
                             <button class="product-button" onclick="addToCart('${product.id}')">

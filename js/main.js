@@ -41,9 +41,10 @@ function loadProducts() {
         <div class="product-card">
             ${product.id.includes('watch') || product.id.includes('bag') ? 
                 `<div class="new-badge" data-i18n="new">${i18n.t('new')}</div>` : ''}
-            <img src="${product.image}" alt="${lang === 'en' ? product.nameEn : product.name}" class="product-image">
+            <img src="${product.image}" alt="${lang === 'en' ? product.nameEn : product.name}" class="product-image"
+                 onclick="window.location.href='product.html?id=${product.id}'" style="cursor: pointer;">
             <div class="product-info">
-                <h3 class="product-title">${lang === 'en' ? product.nameEn : product.name}</h3>
+                <h3 class="product-title" style="cursor: pointer;" onclick="window.location.href='product.html?id=${product.id}'">${lang === 'en' ? product.nameEn : product.name}</h3>
                 <p class="product-price">$${product.price.toFixed(2)}</p>
                 <button class="product-button" onclick="addToCart('${product.id}')" data-i18n="buyNow">
                     ${i18n.t('buyNow')}
