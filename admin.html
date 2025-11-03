@@ -10,8 +10,30 @@
     <style>
         .admin-container {
             max-width: 1400px;
-            margin: 100px auto 2rem;
+            margin: 180px auto 2rem;
             padding: 2rem;
+        }
+        
+        /* Ensure admin doesn't conflict with new header */
+        body.admin-page .top-header {
+            display: none !important;
+        }
+        
+        body.admin-page .main-nav {
+            display: none !important;
+        }
+        
+        body.admin-page .promo-banner {
+            display: none !important;
+        }
+        
+        body.admin-page {
+            padding-top: 0;
+            margin-top: 0;
+        }
+        
+        body.admin-page .admin-container {
+            margin-top: 2rem;
         }
 
         .admin-header {
@@ -473,7 +495,7 @@
         }
     </style>
 </head>
-<body>
+<body class="admin-page">
     <div class="admin-container">
         <div class="admin-header">
             <h1>Admin Panel</h1>

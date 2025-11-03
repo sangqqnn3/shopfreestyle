@@ -10,36 +10,50 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-container">
-            <a href="index.html" class="logo">Shop Free Style</a>
-            <nav>
-                <ul class="nav-menu">
-                    <li><a href="index.html" data-i18n="home">Home</a></li>
-                    <li><a href="watches.html" data-i18n="watches">Watches</a></li>
-                    <li><a href="jewelry.html" data-i18n="jewelry">Jewelry</a></li>
-                    <li><a href="bags.html" data-i18n="bags">Bags</a></li>
-                    <li><a href="#home" data-i18n="about">About</a></li>
-                </ul>
-            </nav>
+    <!-- Top Header -->
+    <header class="top-header">
+        <div class="header-top-container">
+            <a href="index.html" class="logo">SHOP FREE STYLE</a>
             <div class="header-search-container">
                 <div class="header-search-bar">
-                    <input type="text" class="header-search-input" id="headerSearchInput" placeholder="Search products..." onkeyup="handleHeaderSearch(event)">
-                    <button class="header-search-btn" onclick="executeHeaderSearch()">
-                        <i class="fas fa-search"></i> Search
-                    </button>
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="header-search-input" id="headerSearchInput" placeholder="Search for product or brands..." onkeyup="handleHeaderSearch(event)">
                 </div>
             </div>
             <div class="header-right">
-                <div id="languageSwitcher" class="language-switcher"></div>
+                <div id="languageSwitcher" class="language-switcher">
+                    <div class="lang-selector">
+                        <i class="fas fa-flag"></i>
+                        <span>US</span>
+                        <span class="currency">$</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
                 <div class="header-icons">
-                    <i class="fas fa-search" id="searchIcon" style="display: none;"></i>
                     <i class="fas fa-user" id="userIcon"></i>
+                    <span class="icon-label" data-i18n="signIn">Sign in</span>
+                </div>
+                <div class="header-icons">
+                    <i class="fas fa-heart" id="wishlistIcon"></i>
+                </div>
+                <div class="header-icons">
                     <i class="fas fa-shopping-bag" id="cartIcon"></i>
                 </div>
             </div>
         </div>
+        
+        <!-- Main Navigation -->
+        <nav class="main-nav">
+            <div class="nav-container">
+                <ul class="nav-menu">
+                    <li><a href="index.html" data-i18n="home">Home</a></li>
+                    <li><a href="watches.html" data-i18n="watches">Watches</a></li>
+                    <li><a href="jewelry.html" data-i18n="jewelry">Jewelry</a></li>
+                    <li><a href="bags.html" data-i18n="bags">Handbags</a></li>
+                    <li><a href="#about" data-i18n="about">About</a></li>
+                </ul>
+            </div>
+        </nav>
     </header>
 
     <!-- User Dropdown -->
@@ -139,32 +153,104 @@
         </div>
     </div>
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="hero-content">
-            <h1 data-i18n="heroTitle">Discover the New Collection</h1>
-            <p data-i18n="heroSubtitle">Premium watches, jewelry and bags from trusted brands</p>
-            <a href="#products" class="cta-button" data-i18n="shopNow">Shop Now</a>
-        </div>
-    </section>
-
-    <!-- Categories Section -->
-    <section class="categories" id="categories">
-        <h2 class="section-title" data-i18n="shopByCategory">Shop by Category</h2>
-        <div class="categories-grid" id="categoriesGrid">
-            <!-- Categories loaded dynamically -->
-        </div>
-    </section>
-
-    <!-- Products Section -->
-    <section class="products" id="products">
-        <div class="products-container">
-            <h2 class="section-title" data-i18n="bestselling">Bestsellers</h2>
-            <div class="products-grid" id="productsGrid">
-                <!-- Products loaded dynamically -->
+    <!-- Promotional Banner -->
+    <section class="promo-banner">
+        <div class="promo-content">
+            <div class="promo-text">
+                <h2>HALLOWEEN SALE: UP TO 75% OFF</h2>
+                <button class="promo-btn" data-i18n="shopNow">SHOP NOW</button>
             </div>
         </div>
     </section>
+
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs">
+        <div class="breadcrumbs-container">
+            <a href="index.html">Home</a>
+            <span class="breadcrumb-separator">></span>
+            <span>All Products</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <!-- Sidebar Filters -->
+            <aside class="filters-sidebar">
+                <h3 class="filters-title">Filters</h3>
+                
+                <div class="filter-section">
+                    <label class="filter-checkbox">
+                        <input type="checkbox">
+                        <span>Coupon Offers</span>
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox">
+                        <span>Get It Fast</span>
+                    </label>
+                </div>
+
+                <div class="filter-section collapsible">
+                    <div class="filter-header" onclick="toggleFilter(this)">
+                        <h4>Price</h4>
+                        <i class="fas fa-plus"></i>
+                    </div>
+                </div>
+
+                <div class="filter-section collapsible">
+                    <div class="filter-header" onclick="toggleFilter(this)">
+                        <h4>Department</h4>
+                        <i class="fas fa-minus"></i>
+                    </div>
+                    <div class="filter-content active">
+                        <label class="filter-checkbox">
+                            <input type="checkbox">
+                            <span>Accessories</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox">
+                            <span>Bags</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox">
+                            <span>Clothing</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox">
+                            <span>Fashion Accessories</span>
+                        </label>
+                        <a href="#" class="see-more-link">See More</a>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Products Section -->
+            <section class="products-section">
+                <div class="products-header">
+                    <div class="category-tabs">
+                        <button class="category-tab active" onclick="filterByCategory('all')">All</button>
+                        <button class="category-tab" onclick="filterByCategory('watches')" data-i18n="watches">Watches</button>
+                        <button class="category-tab" onclick="filterByCategory('jewelry')" data-i18n="jewelry">Jewelry</button>
+                        <button class="category-tab" onclick="filterByCategory('bags')" data-i18n="bags">Bags</button>
+                    </div>
+                    <div class="products-header-right">
+                        <h1 class="page-title" data-i18n="allProducts">All Products</h1>
+                        <div class="results-sort">
+                            <span id="resultsCount">0 results</span>
+                            <div class="sort-dropdown">
+                                <span>SORT: <span id="sortOption">BEST SELLERS</span></span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="products-grid" id="productsGrid">
+                    <!-- Products loaded dynamically -->
+                </div>
+            </section>
+        </div>
+    </main>
 
     <!-- Payment Methods -->
     <section class="payment-section">
@@ -185,10 +271,10 @@
             <div class="footer-section">
                 <h3 data-i18n="products">Products</h3>
                 <ul>
-                    <li><a href="#watches" data-i18n="womensWatches">Women's Watches</a></li>
-                    <li><a href="#watches" data-i18n="mensWatches">Men's Watches</a></li>
-                    <li><a href="#jewelry" data-i18n="jewelry">Jewelry</a></li>
-                    <li><a href="#bags" data-i18n="bags">Bags</a></li>
+                    <li><a href="watches.html" data-i18n="womensWatches">Women's Watches</a></li>
+                    <li><a href="watches.html" data-i18n="mensWatches">Men's Watches</a></li>
+                    <li><a href="jewelry.html" data-i18n="jewelry">Jewelry</a></li>
+                    <li><a href="bags.html" data-i18n="bags">Bags</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -229,5 +315,92 @@
     <script src="js/i18n.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/main.js"></script>
+    <script>
+        // Toggle filter sections
+        function toggleFilter(element) {
+            const content = element.nextElementSibling;
+            const icon = element.querySelector('i');
+            
+            if (content) {
+                content.classList.toggle('active');
+                icon.classList.toggle('fa-plus');
+                icon.classList.toggle('fa-minus');
+            }
+        }
+
+        // Filter by category
+        function filterByCategory(category) {
+            const tabs = document.querySelectorAll('.category-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const products = db.getProducts();
+            let filtered = products;
+            
+            if (category !== 'all') {
+                filtered = products.filter(p => {
+                    const cat = p.category || '';
+                    return cat.includes(category);
+                });
+            }
+            
+            loadFilteredProducts(filtered);
+            updateResultsCount(filtered.length);
+        }
+
+        function loadFilteredProducts(products) {
+            const productsGrid = document.getElementById('productsGrid');
+            if (!productsGrid) return;
+            
+            const lang = i18n.getLanguage();
+            productsGrid.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <div class="product-image-wrapper">
+                        <i class="fas fa-heart wishlist-icon"></i>
+                        <img src="${product.image}" alt="${lang === 'en' ? product.nameEn : product.name}" class="product-image"
+                             onclick="window.location.href='product.html?id=${product.id}'" style="cursor: pointer;">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-brand">${product.brand || 'PREMIUM BRAND'}</h3>
+                        <p class="product-title" onclick="window.location.href='product.html?id=${product.id}'" style="cursor: pointer;">
+                            ${lang === 'en' ? product.nameEn : product.name}
+                        </p>
+                        ${product.originalPrice ? `
+                            <div class="product-discount">${calculateDiscount(product.price, product.originalPrice)}% OFF</div>
+                            <div class="product-price-container">
+                                <span class="product-price">$${product.price.toFixed(2)}</span>
+                                <span class="product-original-price">$${product.originalPrice.toFixed(2)}</span>
+                            </div>
+                        ` : `
+                            <div class="product-price-container">
+                                <span class="product-price">$${product.price.toFixed(2)}</span>
+                            </div>
+                        `}
+                        ${product.coupon ? `<div class="product-coupon">${product.coupon}</div>` : ''}
+                        ${product.limited ? '<div class="product-badge">Limited Quantity</div>' : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function calculateDiscount(price, originalPrice) {
+            return Math.round(((originalPrice - price) / originalPrice) * 100);
+        }
+
+        function updateResultsCount(count) {
+            const resultsCount = document.getElementById('resultsCount');
+            if (resultsCount) {
+                resultsCount.textContent = `${count} results`;
+            }
+        }
+
+        // Update loadProducts to use new layout
+        const originalLoadProducts = window.loadProducts;
+        window.loadProducts = function() {
+            const products = db.getProducts();
+            loadFilteredProducts(products);
+            updateResultsCount(products.length);
+        };
+    </script>
 </body>
 </html>
