@@ -531,14 +531,14 @@ body {
 
 .price-inputs {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    flex-direction: column;
+    gap: 0.75rem;
     margin-top: 0.5rem;
 }
 
 .price-inputs input {
-    flex: 1;
-    padding: 0.5rem;
+    width: 100%;
+    padding: 0.6rem;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 0.9rem;
@@ -547,10 +547,6 @@ body {
 .price-inputs input:focus {
     outline: none;
     border-color: #333;
-}
-
-.price-inputs span {
-    color: #999;
 }
 
 .see-more-link {
