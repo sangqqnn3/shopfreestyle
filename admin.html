@@ -493,6 +493,141 @@
             color: #666;
             margin-top: 0.5rem;
         }
+        
+        /* Product Details Tabs */
+        .product-details-tabs {
+            margin-top: 1rem;
+        }
+        
+        .details-tabs-header {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .details-tab-btn {
+            background: none;
+            border: none;
+            padding: 1rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            color: #666;
+            position: relative;
+            top: 2px;
+        }
+        
+        .details-tab-btn:hover {
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        .details-tab-btn.active {
+            color: #333;
+            border-bottom-color: #333;
+            font-weight: 600;
+        }
+        
+        .details-tab-content {
+            display: none;
+        }
+        
+        .details-tab-content.active {
+            display: block;
+        }
+        
+        .specs-form {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+        
+        .specs-form .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .specs-form small {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        /* Reviews Admin Section */
+        .reviews-admin-section {
+            background: #fff;
+        }
+        
+        .add-review-form {
+            border: 1px solid #ddd;
+        }
+        
+        .reviews-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .review-item-admin {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #e5e5e5;
+        }
+        
+        .review-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .review-item-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .review-item-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .review-item-stars {
+            color: #ffc107;
+        }
+        
+        .review-item-date {
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        .review-item-verified {
+            background: #27ae60;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .review-item-comment {
+            color: #333;
+            margin-top: 0.5rem;
+            line-height: 1.6;
+        }
+        
+        .review-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
     </style>
 </head>
 <body class="admin-page">
@@ -972,17 +1107,179 @@
                         </div>
                     </div>
 
-                    <!-- Descriptions -->
+                    <!-- Product Details Tabs -->
                     <div class="form-section full-width">
-                        <h4><i class="fas fa-align-left"></i> Product Descriptions</h4>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Description (English):</label>
-                                <textarea id="productDescEn" rows="6"></textarea>
+                        <div class="product-details-tabs">
+                            <div class="details-tabs-header">
+                                <button type="button" class="details-tab-btn active" onclick="switchDetailsTab('description')">
+                                    Description
+                                </button>
+                                <button type="button" class="details-tab-btn" onclick="switchDetailsTab('specifications')">
+                                    Specifications
+                                </button>
+                                <button type="button" class="details-tab-btn" onclick="switchDetailsTab('reviews')">
+                                    Reviews
+                                </button>
+                                <button type="button" class="details-tab-btn" onclick="switchDetailsTab('shipping-returns')">
+                                    Shipping & Returns
+                                </button>
                             </div>
-                            <div class="form-group">
-                                <label>Description (Vietnamese):</label>
-                                <textarea id="productDescVi" rows="6"></textarea>
+                            
+                            <!-- Description Tab -->
+                            <div class="details-tab-content active" id="tabDescription">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Description (English):</label>
+                                        <textarea id="productDescEn" rows="6"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Description (Vietnamese):</label>
+                                        <textarea id="productDescVi" rows="6"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Specifications Tab -->
+                            <div class="details-tab-content" id="tabSpecifications">
+                                <div class="specs-form">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Brand:</label>
+                                            <input type="text" id="specBrand" placeholder="e.g., Shop Free Style">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Model:</label>
+                                            <input type="text" id="specModel" placeholder="e.g., SFS-W100">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Case Material:</label>
+                                            <input type="text" id="specCaseMaterial" placeholder="e.g., Stainless Steel">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Case Size:</label>
+                                            <input type="text" id="specCaseSize" placeholder="e.g., 36mm">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Band Material:</label>
+                                            <input type="text" id="specBandMaterial" placeholder="e.g., Genuine Leather">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Band Width:</label>
+                                            <input type="text" id="specBandWidth" placeholder="e.g., 18mm">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Movement:</label>
+                                            <input type="text" id="specMovement" placeholder="e.g., Japanese Quartz">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Water Resistance:</label>
+                                            <input type="text" id="specWaterResistance" placeholder="e.g., 30 meters">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Warranty:</label>
+                                            <input type="text" id="specWarranty" placeholder="e.g., 2 years">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Additional Specs (comma separated):</label>
+                                            <input type="text" id="specAdditional" placeholder="e.g., Crystal: Mineral, Dial: White">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Custom Specifications (JSON format for advanced users):</label>
+                                        <textarea id="specCustom" rows="4" placeholder='{"Display": "Analog", "Battery": "CR2032"}'></textarea>
+                                        <small style="color: #666;">Leave empty if using fields above. Use JSON format: {"key": "value"}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Reviews Tab -->
+                            <div class="details-tab-content" id="tabReviews">
+                                <div class="reviews-admin-section">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                                        <h4 style="margin: 0;"><i class="fas fa-star"></i> Product Reviews</h4>
+                                        <div style="display: flex; gap: 0.5rem;">
+                                            <button type="button" class="btn btn-secondary" onclick="generateRandomReviews()">
+                                                <i class="fas fa-random"></i> Generate Random Reviews
+                                            </button>
+                                            <button type="button" class="btn btn-add" onclick="showAddReviewForm()">
+                                                <i class="fas fa-plus"></i> Add Review
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Add Review Form -->
+                                    <div id="addReviewForm" class="add-review-form" style="display: none; background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                                        <h5 style="margin-top: 0;">Add New Review</h5>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label>Reviewer Name:</label>
+                                                <input type="text" id="reviewName" placeholder="e.g., Sarah M.">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Rating (1-5):</label>
+                                                <select id="reviewRating">
+                                                    <option value="5">5 Stars</option>
+                                                    <option value="4">4 Stars</option>
+                                                    <option value="3">3 Stars</option>
+                                                    <option value="2">2 Stars</option>
+                                                    <option value="1">1 Star</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Review Comment:</label>
+                                            <textarea id="reviewComment" rows="3" placeholder="Write your review here..."></textarea>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label>Review Date:</label>
+                                                <input type="date" id="reviewDate">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Verified Purchase:</label>
+                                                <label style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                                                    <input type="checkbox" id="reviewVerified">
+                                                    <span>Mark as verified purchase</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                                            <button type="button" class="btn btn-success" onclick="addReview()">
+                                                <i class="fas fa-save"></i> Add Review
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" onclick="cancelAddReview()">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Reviews List -->
+                                    <div id="reviewsList" class="reviews-list">
+                                        <p style="color: #666; text-align: center; padding: 2rem;">No reviews yet. Add your first review!</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Shipping & Returns Tab -->
+                            <div class="details-tab-content" id="tabShippingReturns">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Shipping Information:</label>
+                                        <textarea id="productShippingInfo" rows="4" placeholder="Free Standard Shipping&#10;Delivery time: 5-7 business days&#10;We ship to most countries worldwide"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Returns & Warranty Information:</label>
+                                        <textarea id="productReturnsInfo" rows="4" placeholder="30-Day Return Policy&#10;Items must be in original condition&#10;2-Year Warranty included"></textarea>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1112,6 +1409,226 @@
     <script src="js/database.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/auth.js"></script>
+    <script>
+        // Switch between product details tabs
+        function switchDetailsTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.details-tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.details-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            const tabContent = document.getElementById('tab' + tabName.charAt(0).toUpperCase() + tabName.slice(1));
+            if (tabContent) {
+                tabContent.classList.add('active');
+            }
+            
+            // Activate corresponding button
+            const buttons = document.querySelectorAll('.details-tab-btn');
+            const tabMap = {
+                'description': 0,
+                'specifications': 1,
+                'reviews': 2,
+                'shipping-returns': 3
+            };
+            buttons.forEach((btn, index) => {
+                if (index === (tabMap[tabName] || 0)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+        
+        // Reviews Management Functions
+        function showAddReviewForm() {
+            document.getElementById('addReviewForm').style.display = 'block';
+            // Set default date to today
+            if (!document.getElementById('reviewDate').value) {
+                document.getElementById('reviewDate').value = new Date().toISOString().split('T')[0];
+            }
+        }
+        
+        function cancelAddReview() {
+            document.getElementById('addReviewForm').style.display = 'none';
+            document.getElementById('reviewName').value = '';
+            document.getElementById('reviewRating').value = '5';
+            document.getElementById('reviewComment').value = '';
+            document.getElementById('reviewDate').value = '';
+            document.getElementById('reviewVerified').checked = false;
+        }
+        
+        // Reviews management - use window scope
+        if (!window.productReviews) {
+            window.productReviews = [];
+        }
+        
+        function addReview() {
+            const name = document.getElementById('reviewName').value.trim();
+            const rating = parseInt(document.getElementById('reviewRating').value);
+            const comment = document.getElementById('reviewComment').value.trim();
+            const date = document.getElementById('reviewDate').value;
+            const verified = document.getElementById('reviewVerified').checked;
+            
+            if (!name || !comment) {
+                alert('Please fill in reviewer name and comment');
+                return;
+            }
+            
+            const review = {
+                id: 'review-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+                name: name,
+                rating: rating,
+                comment: comment,
+                date: date || new Date().toISOString().split('T')[0],
+                verified: verified,
+                createdAt: new Date().toISOString()
+            };
+            
+            window.productReviews.push(review);
+            renderReviewsList();
+            cancelAddReview();
+        }
+        
+        function deleteReview(reviewId) {
+            if (confirm('Are you sure you want to delete this review?')) {
+                window.productReviews = window.productReviews.filter(r => r.id !== reviewId);
+                renderReviewsList();
+            }
+        }
+        
+        function renderReviewsList() {
+            const container = document.getElementById('reviewsList');
+            if (!container) return;
+            
+            const reviews = window.productReviews || [];
+            
+            if (reviews.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center; padding: 2rem;">No reviews yet. Add your first review!</p>';
+                return;
+            }
+            
+            container.innerHTML = reviews.map(review => {
+                const stars = Array.from({length: 5}, (_, i) => 
+                    i < review.rating ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>'
+                ).join('');
+                
+                const dateStr = formatReviewDate(review.date || review.createdAt);
+                
+                return `
+                    <div class="review-item-admin">
+                        <div class="review-item-header">
+                            <div class="review-item-info">
+                                <span class="review-item-name">${review.name}</span>
+                                <div class="review-item-stars">${stars}</div>
+                                ${review.verified ? '<span class="review-item-verified">Verified Purchase</span>' : ''}
+                                <span class="review-item-date">${dateStr}</span>
+                            </div>
+                            <div class="review-item-actions">
+                                <button class="btn btn-delete btn-sm" onclick="deleteReview('${review.id}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                        <div class="review-item-comment">${review.comment}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function formatReviewDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) return 'Today';
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays} days ago`;
+            if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+            if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+            return date.toLocaleDateString();
+        }
+        
+        function generateRandomReviews() {
+            const count = prompt('How many random reviews would you like to generate?', '10');
+            if (!count || isNaN(count) || count < 1) return;
+            
+            const names = [
+                'Sarah M.', 'Emma L.', 'Jessica K.', 'Michael B.', 'David R.', 
+                'Jennifer W.', 'Amanda T.', 'Robert H.', 'Lisa P.', 'Chris D.',
+                'Maria G.', 'James S.', 'Patricia F.', 'Daniel M.', 'Linda C.',
+                'Thomas A.', 'Barbara J.', 'Richard L.', 'Susan N.', 'Joseph K.'
+            ];
+            
+            const positiveComments = [
+                'Absolutely love this product! The quality is outstanding and it looks even better in person.',
+                'Great purchase! The design is elegant and it\'s very comfortable. Highly recommend!',
+                'Excellent quality for the price. Fast shipping and great customer service.',
+                'Beautiful product! Exactly as described. Very satisfied with my purchase.',
+                'Amazing quality! Worth every penny. Will definitely buy again.',
+                'Perfect! Exceeded my expectations. The quality is top-notch.',
+                'Love it! Great value for money. Highly satisfied with this purchase.',
+                'Wonderful product! Fast delivery and excellent packaging. Very happy!',
+                'Outstanding quality! Looks great and feels premium. Highly recommend!',
+                'Excellent product! Exactly what I was looking for. Very pleased!'
+            ];
+            
+            const neutralComments = [
+                'Good product overall. Quality is decent for the price.',
+                'Nice product, but could be better. Still satisfied with purchase.',
+                'It\'s okay. Nothing special but does the job.',
+                'Average quality. Expected more for the price.',
+                'Decent product. Not bad but not great either.'
+            ];
+            
+            const negativeComments = [
+                'Not as expected. Quality could be better.',
+                'Disappointed with the quality. Expected more for this price.',
+                'Not satisfied. The product doesn\'t match the description.'
+            ];
+            
+            for (let i = 0; i < parseInt(count); i++) {
+                const rating = Math.random() < 0.7 ? 
+                    (Math.random() < 0.8 ? 5 : 4) : 
+                    (Math.random() < 0.7 ? 3 : (Math.random() < 0.8 ? 2 : 1));
+                
+                let comment;
+                if (rating >= 4) {
+                    comment = positiveComments[Math.floor(Math.random() * positiveComments.length)];
+                } else if (rating === 3) {
+                    comment = neutralComments[Math.floor(Math.random() * neutralComments.length)];
+                } else {
+                    comment = negativeComments[Math.floor(Math.random() * negativeComments.length)];
+                }
+                
+                const name = names[Math.floor(Math.random() * names.length)];
+                const daysAgo = Math.floor(Math.random() * 180); // Random date within last 6 months
+                const date = new Date();
+                date.setDate(date.getDate() - daysAgo);
+                
+                const review = {
+                    id: 'review-' + Date.now() + '-' + i + '-' + Math.random().toString(36).substr(2, 5),
+                    name: name,
+                    rating: rating,
+                    comment: comment,
+                    date: date.toISOString().split('T')[0],
+                    verified: Math.random() > 0.4, // 60% verified
+                    createdAt: date.toISOString()
+                };
+                
+                if (!window.productReviews) window.productReviews = [];
+                window.productReviews.push(review);
+            }
+            
+            renderReviewsList();
+            alert(`Generated ${count} random reviews!`);
+        }
+    </script>
     <script>
         // Configure AliExpress API
         // Option 1: Use backend API proxy on Render (recommended)

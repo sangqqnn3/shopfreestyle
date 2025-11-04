@@ -199,6 +199,9 @@ function displayProductDetails(product) {
     
     // Store product ID for cart
     window.currentProductId = product.id;
+    
+    // Load and display reviews
+    loadProductReviews(product);
 }
 
 // Select main image
@@ -377,6 +380,133 @@ function setupDetailEventListeners() {
         userIcon.addEventListener('click', toggleUserDropdown);
         userIcon.dataset.listenerAttached = 'true';
     }
+}
+
+// Load and display product reviews
+function loadProductReviews(product) {
+    const reviews = product.reviews || [];
+    const reviewsTab = document.getElementById('reviews');
+    
+    if (!reviewsTab) return;
+    
+    // Calculate average rating
+    const avgRating = reviews.length > 0 
+        ? reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length 
+        : 0;
+    
+    // Update rating display
+    const ratingSection = document.querySelector('.rating-section');
+    if (ratingSection && reviews.length > 0) {
+        const ratingNumber = ratingSection.querySelector('.rating-number');
+        const ratingCount = ratingSection.querySelector('.rating-count');
+        const stars = ratingSection.querySelectorAll('.stars i');
+        
+        if (ratingNumber) ratingNumber.textContent = avgRating.toFixed(1);
+        if (ratingCount) ratingCount.textContent = `(${reviews.length} reviews)`;
+        
+        // Update stars
+        stars.forEach((star, index) => {
+            if (index < Math.round(avgRating)) {
+                star.classList.add('active');
+            } else {
+                star.classList.remove('active');
+            }
+        });
+    }
+    
+    // Update tab button
+    const reviewsTabBtn = document.querySelector('.tab-btn[onclick*="reviews"]');
+    if (reviewsTabBtn) {
+        reviewsTabBtn.textContent = `Reviews (${reviews.length})`;
+    }
+    
+    // Calculate rating distribution
+    const ratingDist = {5: 0, 4: 0, 3: 0, 2: 0, 1: 0};
+    reviews.forEach(r => {
+        const rating = Math.round(r.rating || 0);
+        if (rating >= 1 && rating <= 5) {
+            ratingDist[rating]++;
+        }
+    });
+    
+    // Build reviews HTML
+    let reviewsHTML = '';
+    
+    if (reviews.length > 0) {
+        // Reviews summary
+        reviewsHTML += `
+            <div class="reviews-summary">
+                <div class="summary-left">
+                    <div class="overall-rating">
+                        <span class="big-rating">${avgRating.toFixed(1)}</span>
+                        <div class="stars">
+                            ${Array.from({length: 5}, (_, i) => 
+                                `<i class="fas fa-star ${i < Math.round(avgRating) ? 'active' : ''}"></i>`
+                            ).join('')}
+                        </div>
+                        <span>Based on ${reviews.length} reviews</span>
+                    </div>
+                </div>
+                <div class="summary-right">
+                    ${[5, 4, 3, 2, 1].map(rating => {
+                        const count = ratingDist[rating] || 0;
+                        const percentage = reviews.length > 0 ? Math.round((count / reviews.length) * 100) : 0;
+                        return `
+                            <div class="rating-bar">
+                                <span>${rating} <i class="fas fa-star"></i></span>
+                                <div class="bar">
+                                    <div class="fill" style="width: ${percentage}%"></div>
+                                </div>
+                                <span>${percentage}%</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+        
+        // Individual reviews
+        reviewsHTML += reviews.map(review => {
+            const stars = Array.from({length: 5}, (_, i) => 
+                `<i class="fas fa-star ${i < review.rating ? 'active' : ''}"></i>`
+            ).join('');
+            
+            const dateStr = formatReviewDateForDisplay(review.date || review.createdAt);
+            
+            return `
+                <div class="review-item">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <strong>${review.name}</strong>
+                            <div class="stars">${stars}</div>
+                            ${review.verified ? '<span style="background: #27ae60; color: white; padding: 0.2rem 0.5rem; border-radius: 3px; font-size: 0.75rem; margin-left: 0.5rem;">Verified Purchase</span>' : ''}
+                        </div>
+                        <span class="review-date">${dateStr}</span>
+                    </div>
+                    <p>${review.comment}</p>
+                </div>
+            `;
+        }).join('');
+    } else {
+        reviewsHTML = '<p style="text-align: center; padding: 2rem; color: #666;">No reviews yet. Be the first to review this product!</p>';
+    }
+    
+    reviewsTab.innerHTML = reviewsHTML;
+}
+
+function formatReviewDateForDisplay(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+    if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+    return date.toLocaleDateString();
 }
 
 // Show notification

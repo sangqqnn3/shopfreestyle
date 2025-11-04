@@ -202,10 +202,34 @@ function showProductForm(productId = null) {
         document.getElementById('productImage').value = product.image || '';
         document.getElementById('productDescEn').value = product.descriptionEn || '';
         document.getElementById('productDescVi').value = product.description || '';
+        
+        // Load specifications
+        if (product.specifications) {
+            const specs = product.specifications;
+            if (document.getElementById('specBrand')) {
+                document.getElementById('specBrand').value = specs.Brand || '';
+                document.getElementById('specModel').value = specs.Model || '';
+                document.getElementById('specCaseMaterial').value = specs['Case Material'] || '';
+                document.getElementById('specCaseSize').value = specs['Case Size'] || '';
+                document.getElementById('specBandMaterial').value = specs['Band Material'] || '';
+                document.getElementById('specBandWidth').value = specs['Band Width'] || '';
+                document.getElementById('specMovement').value = specs.Movement || '';
+                document.getElementById('specWaterResistance').value = specs['Water Resistance'] || '';
+                document.getElementById('specWarranty').value = specs.Warranty || '';
+            }
+        }
+        
+        // Load shipping and returns info
+        if (document.getElementById('productShippingInfo')) {
+            document.getElementById('productShippingInfo').value = product.shippingInfo || '';
+            document.getElementById('productReturnsInfo').value = product.returnsInfo || '';
+        }
     } else {
         title.textContent = 'Add Product';
         document.getElementById('productId').value = '';
         document.getElementById('productForm').querySelector('form').reset();
+        // Reset tabs
+        switchDetailsTab('description');
     }
 
     form.classList.add('active');
@@ -218,6 +242,52 @@ function closeProductForm() {
 function saveProduct(e) {
     e.preventDefault();
     const productId = document.getElementById('productId').value;
+    
+    // Collect specifications
+    const specifications = {};
+    const specBrand = document.getElementById('specBrand')?.value;
+    const specModel = document.getElementById('specModel')?.value;
+    const specCaseMaterial = document.getElementById('specCaseMaterial')?.value;
+    const specCaseSize = document.getElementById('specCaseSize')?.value;
+    const specBandMaterial = document.getElementById('specBandMaterial')?.value;
+    const specBandWidth = document.getElementById('specBandWidth')?.value;
+    const specMovement = document.getElementById('specMovement')?.value;
+    const specWaterResistance = document.getElementById('specWaterResistance')?.value;
+    const specWarranty = document.getElementById('specWarranty')?.value;
+    const specAdditional = document.getElementById('specAdditional')?.value;
+    const specCustom = document.getElementById('specCustom')?.value;
+    
+    // Add standard specs
+    if (specBrand) specifications.Brand = specBrand;
+    if (specModel) specifications.Model = specModel;
+    if (specCaseMaterial) specifications['Case Material'] = specCaseMaterial;
+    if (specCaseSize) specifications['Case Size'] = specCaseSize;
+    if (specBandMaterial) specifications['Band Material'] = specBandMaterial;
+    if (specBandWidth) specifications['Band Width'] = specBandWidth;
+    if (specMovement) specifications.Movement = specMovement;
+    if (specWaterResistance) specifications['Water Resistance'] = specWaterResistance;
+    if (specWarranty) specifications.Warranty = specWarranty;
+    
+    // Parse additional specs
+    if (specAdditional) {
+        specAdditional.split(',').forEach(spec => {
+            const [key, value] = spec.split(':').map(s => s.trim());
+            if (key && value) {
+                specifications[key] = value;
+            }
+        });
+    }
+    
+    // Parse custom JSON specs
+    if (specCustom && specCustom.trim()) {
+        try {
+            const customSpecs = JSON.parse(specCustom);
+            Object.assign(specifications, customSpecs);
+        } catch (e) {
+            console.warn('Invalid JSON in custom specifications:', e);
+        }
+    }
+    
     const productData = {
         nameEn: document.getElementById('productNameEn').value,
         name: document.getElementById('productNameVi').value,
@@ -226,7 +296,10 @@ function saveProduct(e) {
         category: document.getElementById('productCategory').value,
         image: document.getElementById('productImage').value,
         descriptionEn: document.getElementById('productDescEn').value,
-        description: document.getElementById('productDescVi').value
+        description: document.getElementById('productDescVi').value,
+        specifications: Object.keys(specifications).length > 0 ? specifications : undefined,
+        shippingInfo: document.getElementById('productShippingInfo')?.value || undefined,
+        returnsInfo: document.getElementById('productReturnsInfo')?.value || undefined
     };
 
     if (productId) {
@@ -1148,6 +1221,7 @@ function checkApiStatus() {
 let productColors = [];
 let productGalleryImages = [];
 let productTags = [];
+let productReviews = [];
 
 // Add color to product
 function addColor() {
@@ -1271,14 +1345,39 @@ function updateShowProductForm() {
             document.getElementById('productSizes').value = product.sizes || '';
             document.getElementById('productKeywords').value = product.keywords || '';
             
+            // Load specifications
+            if (product.specifications) {
+                const specs = product.specifications;
+                if (document.getElementById('specBrand')) {
+                    document.getElementById('specBrand').value = specs.Brand || '';
+                    document.getElementById('specModel').value = specs.Model || '';
+                    document.getElementById('specCaseMaterial').value = specs['Case Material'] || '';
+                    document.getElementById('specCaseSize').value = specs['Case Size'] || '';
+                    document.getElementById('specBandMaterial').value = specs['Band Material'] || '';
+                    document.getElementById('specBandWidth').value = specs['Band Width'] || '';
+                    document.getElementById('specMovement').value = specs.Movement || '';
+                    document.getElementById('specWaterResistance').value = specs['Water Resistance'] || '';
+                    document.getElementById('specWarranty').value = specs.Warranty || '';
+                }
+            }
+            
+            // Load shipping and returns info
+            if (document.getElementById('productShippingInfo')) {
+                document.getElementById('productShippingInfo').value = product.shippingInfo || '';
+                document.getElementById('productReturnsInfo').value = product.returnsInfo || '';
+            }
+            
             // Load arrays
             productColors = product.colors || [];
             productGalleryImages = product.galleryImages || [];
             productTags = product.tags || [];
+            productReviews = product.reviews || [];
+            window.productReviews = product.reviews || [];
             
             // Render
             renderColorsList();
             renderGalleryImages();
+            if (typeof renderReviewsList === 'function') renderReviewsList();
             toggleShippingFee();
             loadCouponsToSelect();
         } else {
@@ -1291,8 +1390,11 @@ function updateShowProductForm() {
             productColors = [];
             productGalleryImages = [];
             productTags = [];
+            productReviews = [];
+            window.productReviews = [];
             renderColorsList();
             renderGalleryImages();
+            if (typeof renderReviewsList === 'function') renderReviewsList();
             toggleShippingFee();
             loadCouponsToSelect();
         }
@@ -1311,6 +1413,51 @@ function updateSaveProduct() {
     window.saveProduct = function(e) {
         e.preventDefault();
         const productId = document.getElementById('productId').value;
+        
+        // Collect specifications
+        const specifications = {};
+        const specBrand = document.getElementById('specBrand')?.value;
+        const specModel = document.getElementById('specModel')?.value;
+        const specCaseMaterial = document.getElementById('specCaseMaterial')?.value;
+        const specCaseSize = document.getElementById('specCaseSize')?.value;
+        const specBandMaterial = document.getElementById('specBandMaterial')?.value;
+        const specBandWidth = document.getElementById('specBandWidth')?.value;
+        const specMovement = document.getElementById('specMovement')?.value;
+        const specWaterResistance = document.getElementById('specWaterResistance')?.value;
+        const specWarranty = document.getElementById('specWarranty')?.value;
+        const specAdditional = document.getElementById('specAdditional')?.value;
+        const specCustom = document.getElementById('specCustom')?.value;
+        
+        // Add standard specs
+        if (specBrand) specifications.Brand = specBrand;
+        if (specModel) specifications.Model = specModel;
+        if (specCaseMaterial) specifications['Case Material'] = specCaseMaterial;
+        if (specCaseSize) specifications['Case Size'] = specCaseSize;
+        if (specBandMaterial) specifications['Band Material'] = specBandMaterial;
+        if (specBandWidth) specifications['Band Width'] = specBandWidth;
+        if (specMovement) specifications.Movement = specMovement;
+        if (specWaterResistance) specifications['Water Resistance'] = specWaterResistance;
+        if (specWarranty) specifications.Warranty = specWarranty;
+        
+        // Parse additional specs
+        if (specAdditional) {
+            specAdditional.split(',').forEach(spec => {
+                const [key, value] = spec.split(':').map(s => s.trim());
+                if (key && value) {
+                    specifications[key] = value;
+                }
+            });
+        }
+        
+        // Parse custom JSON specs
+        if (specCustom && specCustom.trim()) {
+            try {
+                const customSpecs = JSON.parse(specCustom);
+                Object.assign(specifications, customSpecs);
+            } catch (e) {
+                console.warn('Invalid JSON in custom specifications:', e);
+            }
+        }
         
         const productData = {
             sku: document.getElementById('productSKU').value,
@@ -1334,7 +1481,11 @@ function updateSaveProduct() {
             colors: productColors,
             sizes: document.getElementById('productSizes').value,
             keywords: document.getElementById('productKeywords').value,
-            tags: productTags
+            tags: productTags,
+            specifications: Object.keys(specifications).length > 0 ? specifications : undefined,
+            shippingInfo: document.getElementById('productShippingInfo')?.value || undefined,
+            returnsInfo: document.getElementById('productReturnsInfo')?.value || undefined,
+            reviews: (window.productReviews || [])
         };
         
         if (productId) {
