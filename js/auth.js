@@ -107,17 +107,33 @@ document.addEventListener('DOMContentLoaded', function() {
     const userDropdown = document.getElementById('userDropdown');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    if (userIcon) {
+    // Find the header-icons container that contains userIcon
+    const userIconContainer = userIcon ? userIcon.closest('.header-icons') : null;
+
+    if (userIconContainer) {
+        userIconContainer.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (userDropdown) {
+                userDropdown.classList.toggle('hidden');
+            }
+        });
+    } else if (userIcon) {
+        // Fallback: attach to icon directly
         userIcon.addEventListener('click', function(e) {
             e.stopPropagation();
-            userDropdown.classList.toggle('hidden');
+            if (userDropdown) {
+                userDropdown.classList.toggle('hidden');
+            }
         });
     }
 
     // Close dropdown when clicking outside
     document.addEventListener('click', function(e) {
-        if (!userDropdown.contains(e.target) && !userIcon.contains(e.target)) {
-            userDropdown.classList.add('hidden');
+        if (userDropdown && !userDropdown.contains(e.target)) {
+            const isClickInside = userIconContainer && userIconContainer.contains(e.target);
+            if (!isClickInside && userIcon && !userIcon.contains(e.target)) {
+                userDropdown.classList.add('hidden');
+            }
         }
     });
 

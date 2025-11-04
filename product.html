@@ -10,36 +10,50 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-container">
-            <a href="index.html" class="logo">Shop Free Style</a>
-            <nav>
-                <ul class="nav-menu">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="watches.html">Watches</a></li>
-                    <li><a href="jewelry.html">Jewelry</a></li>
-                    <li><a href="bags.html">Bags</a></li>
-                    <li><a href="#">About</a></li>
-                </ul>
-            </nav>
+    <!-- Top Header -->
+    <header class="top-header">
+        <div class="header-top-container">
+            <a href="index.html" class="logo">SHOP FREE STYLE</a>
             <div class="header-search-container">
                 <div class="header-search-bar">
-                    <input type="text" class="header-search-input" id="headerSearchInput" placeholder="Search products..." onkeyup="handleHeaderSearch(event)">
-                    <button class="header-search-btn" onclick="executeHeaderSearch()">
-                        <i class="fas fa-search"></i> Search
-                    </button>
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="header-search-input" id="headerSearchInput" placeholder="Search for product or brands..." onkeyup="handleHeaderSearch(event)">
                 </div>
             </div>
             <div class="header-right">
-                <div id="languageSwitcher" class="language-switcher"></div>
+                <div id="languageSwitcher" class="language-switcher">
+                    <div class="lang-selector">
+                        <i class="fas fa-flag"></i>
+                        <span>US</span>
+                        <span class="currency">$</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
                 <div class="header-icons">
-                    <i class="fas fa-search" id="searchIcon" style="display: none;"></i>
                     <i class="fas fa-user" id="userIcon"></i>
+                    <span class="icon-label" data-i18n="signIn">Sign in</span>
+                </div>
+                <div class="header-icons">
+                    <i class="fas fa-heart" id="wishlistIcon"></i>
+                </div>
+                <div class="header-icons">
                     <i class="fas fa-shopping-bag" id="cartIcon"></i>
                 </div>
             </div>
         </div>
+        
+        <!-- Main Navigation -->
+        <nav class="main-nav">
+            <div class="nav-container">
+                <ul class="nav-menu">
+                    <li><a href="index.html" data-i18n="home">Home</a></li>
+                    <li><a href="watches.html" data-i18n="watches">Watches</a></li>
+                    <li><a href="jewelry.html" data-i18n="jewelry">Jewelry</a></li>
+                    <li><a href="bags.html" data-i18n="bags">Handbags</a></li>
+                    <li><a href="#about" data-i18n="about">About</a></li>
+                </ul>
+            </div>
+        </nav>
     </header>
 
     <!-- Search Modal -->
